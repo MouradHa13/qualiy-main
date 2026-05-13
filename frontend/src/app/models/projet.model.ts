@@ -10,7 +10,7 @@ export interface Projet {
   statut: string; // nomenclature label or code
   avancement?: number;
   kpiGlobal?: number;
-  chefDeProjet?: { id: string };
+  chefDeProjet?: { id: string; nom?: string; email?: string };
   details?: ProjectDetails;
 }
 

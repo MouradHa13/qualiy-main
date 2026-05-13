@@ -5,7 +5,7 @@ import { FicheSuiviFormDialogComponent } from '../fiche-suivi-form-dialog/fiche-
 import { ProjectStepperFormComponent } from '../project-stepper-form/project-stepper-form.component';
 import { ProjetService } from '../../../services/projet.service';
 import { FicheService } from '../../../services/fiche.service';
-import { Project } from '../../../core/models/app.models';
+import { Projet, FicheSuivi } from '../../../models/projet.model';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
@@ -29,18 +29,18 @@ export class ProjectListComponent implements OnInit {
   private toastr = inject(ToastrService);
   private router = inject(Router);
   private spinner = inject(NgxSpinnerService);
-  projets: Project[] = [];
+  projets: Projet[] = [];
   displayedColumns: string[] = ['nom', 'responsable', 'statut', 'actions'];
   
   showAddProjectModal = false;
-  selectedProjectToEdit?: Project;
+  selectedProjectToEdit?: Projet;
 
   ngOnInit() {
     this.loadProjects();
   }
 
   loadProjects() {
-    this.projetService.getAll().subscribe((data: Project[]) => this.projets = data);
+    this.projetService.getAll().subscribe((data: Projet[]) => this.projets = data);
   }
 
   getStatusClass(statut: string) {
@@ -52,13 +52,13 @@ export class ProjectListComponent implements OnInit {
     }
   }
 
-  viewProjectDetails(project: Project) {
+  viewProjectDetails(project: Projet) {
     if (project.id) {
       this.router.navigate(['/chef/projets', project.id]);
     }
   }
 
-  openProjectForm(project?: Project) {
+  openProjectForm(project?: Projet) {
     this.selectedProjectToEdit = project;
     this.showAddProjectModal = true;
   }
@@ -68,7 +68,7 @@ export class ProjectListComponent implements OnInit {
     this.selectedProjectToEdit = undefined;
   }
 
-  onProjectStepperSubmitted(project: Project) {
+  onProjectStepperSubmitted(project: Projet) {
     this.spinner.show();
     const request = project.id 
       ? this.projetService.update(project.id, project)
@@ -107,7 +107,7 @@ export class ProjectListComponent implements OnInit {
     }
   }
 
-  openFicheSuiviForm(project: Project) {
+  openFicheSuiviForm(project: Projet) {
     if (!project.id) return;
     
     const dialogRef = this.dialog.open(FicheSuiviFormDialogComponent, {
@@ -139,7 +139,7 @@ export class ProjectListComponent implements OnInit {
     return 'assignment';
   }
 
-  getProjectsByStatut(statut: string): Project[] {
+  getProjectsByStatut(statut: string): Projet[] {
     return this.projets.filter(p => p.statut?.toLowerCase() === statut.toLowerCase());
   }
 }

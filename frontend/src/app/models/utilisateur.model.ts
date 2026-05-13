@@ -19,6 +19,7 @@ export interface Utilisateur {
    role?: Role;
    roles?: Role[];
   actif: boolean;
+  lastSeen?: Date;
   dateCreation?: Date;
 }
 

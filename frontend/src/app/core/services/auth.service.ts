@@ -52,7 +52,15 @@ export class AuthService {
   }
 
   logout(): void {
+    this.http.post(`${environment.apiUrl}/api/auth/logout`, {}).subscribe({
+      next: () => this.finalizeLogout(),
+      error: () => this.finalizeLogout() // Still logout locally if server fails
+    });
+  }
+
+  private finalizeLogout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }

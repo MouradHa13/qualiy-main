@@ -151,14 +151,14 @@ export class ProjectStepperFormComponent implements OnInit {
       action: [''],
       profil: [''],
       chargeHM: [''],
-      mois: [[]]
+      mois: []
     }));
   }
   removePlanningAction(index: number) { this.planningActions.removeAt(index); }
   
   isMonthSelected(index: number, month: number): boolean {
-    const mois = this.planningActions.at(index).get('mois')?.value as number[];
-    return mois?.includes(month) || false;
+    const mois = this.planningActions.at(index).get('mois')?.value;
+    return Array.isArray(mois) && mois.includes(month);
   }
 
   toggleMonth(index: number, month: number) {

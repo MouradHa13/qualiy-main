@@ -47,4 +47,12 @@ export class UserService {
   toggleStatus(id: string): Observable<Utilisateur> {
     return this.http.patch<Utilisateur>(`${this.apiUrl}/${id}/toggle-status`, {});
   }
+
+  changePassword(id: string, oldPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/change-password`, { oldPassword, newPassword });
+  }
+
+  resetPasswordAdmin(id: string, newPassword: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${id}/reset-password-admin`, newPassword);
+  }
 }

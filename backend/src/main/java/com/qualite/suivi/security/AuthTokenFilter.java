@@ -23,6 +23,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private com.qualite.suivi.repository.UtilisateurRepository utilisateurRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Override
@@ -42,6 +45,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                
+                // Update lastSeen status
+                utilisateurRepository.findByEmail(username).ifPresent(user -> {
+                    user.setLastSeen(new java.util.Date());
+                    utilisateurRepository.save(user);
+                });
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);

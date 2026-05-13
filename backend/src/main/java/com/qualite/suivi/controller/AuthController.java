@@ -68,6 +68,19 @@ public class AuthController {
                 roles));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            utilisateurRepository.findByEmail(userDetails.getEmail()).ifPresent(user -> {
+                user.setLastSeen(null); // Clear lastSeen to show as offline
+                utilisateurRepository.save(user);
+            });
+        }
+        return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (utilisateurRepository.existsByEmail(signUpRequest.getEmail())) {

@@ -46,16 +46,29 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("Roles verified/seeded successfully!");
 
-        // Seed Users
-        Utilisateur admin = ensureUser("Admin Tunisie", "admin@tunisie-qualite.tn", "admin123", "ADMIN", Set.of(roleAdmin));
-        
-        Utilisateur chef1 = ensureUser("Amine Trabelsi", "amine.trabelsi@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
-        Utilisateur chef2 = ensureUser("Leila Gharbi", "leila.gharbi@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
-        Utilisateur chef3 = ensureUser("Youssef Msakni", "youssef.msakni@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
-
-        Utilisateur pilote1 = ensureUser("Fatma Ben Ali", "fatma.benali@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
-        Utilisateur pilote2 = ensureUser("Samir Bouazizi", "samir.bouazizi@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
-        Utilisateur pilote3 = ensureUser("Rim Karray", "rim.karray@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
+        // Seed Users UNIQUEMENT si la base est vide (premier démarrage)
+        Utilisateur admin, chef1, chef2, chef3, pilote1, pilote2, pilote3;
+        if (utilisateurRepository.count() == 0) {
+            System.out.println("Base vide - Création des utilisateurs par défaut...");
+            admin   = ensureUser("Admin Tunisie", "admin@tunisie-qualite.tn", "admin123", "ADMIN", Set.of(roleAdmin));
+            chef1   = ensureUser("Amine Trabelsi", "amine.trabelsi@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
+            chef2   = ensureUser("Leila Gharbi", "leila.gharbi@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
+            chef3   = ensureUser("Youssef Msakni", "youssef.msakni@tunisie-qualite.tn", "chef123", "CHEF_PROJET", Set.of(roleChef));
+            pilote1 = ensureUser("Fatma Ben Ali", "fatma.benali@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
+            pilote2 = ensureUser("Samir Bouazizi", "samir.bouazizi@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
+            pilote3 = ensureUser("Rim Karray", "rim.karray@tunisie-qualite.tn", "pilote123", "PILOTE_QUALITE", Set.of(rolePilote));
+            System.out.println("Utilisateurs créés avec succès!");
+        } else {
+            System.out.println("Des utilisateurs existent déjà - Seeding ignoré pour préserver les données.");
+            // Récupérer les utilisateurs existants pour les notifications
+            admin   = utilisateurRepository.findByEmail("admin@tunisie-qualite.tn").orElse(null);
+            chef1   = utilisateurRepository.findByEmail("amine.trabelsi@tunisie-qualite.tn").orElse(null);
+            chef2   = utilisateurRepository.findByEmail("leila.gharbi@tunisie-qualite.tn").orElse(null);
+            chef3   = utilisateurRepository.findByEmail("youssef.msakni@tunisie-qualite.tn").orElse(null);
+            pilote1 = utilisateurRepository.findByEmail("fatma.benali@tunisie-qualite.tn").orElse(null);
+            pilote2 = utilisateurRepository.findByEmail("samir.bouazizi@tunisie-qualite.tn").orElse(null);
+            pilote3 = utilisateurRepository.findByEmail("rim.karray@tunisie-qualite.tn").orElse(null);
+        }
 
         // Seed Projects AND Fiches
         /* 
@@ -70,10 +83,12 @@ public class DataInitializer implements CommandLineRunner {
         */
         System.out.println("Automatic seeding of projects disabled to allow manual management.");
 
-        // Seed Notifications
-        if (notificationRepository.count() == 0) {
+        // Seed Notifications (uniquement si les utilisateurs de référence existent)
+        if (notificationRepository.count() == 0 && pilote1 != null && chef1 != null) {
             seedNotifications(pilote1.getId(), chef1.getId());
             System.out.println("Sample notifications seeded!");
+        } else if (pilote1 == null || chef1 == null) {
+            System.out.println("Utilisateurs de référence introuvables - Seeding notifications ignoré.");
         }
     }
 

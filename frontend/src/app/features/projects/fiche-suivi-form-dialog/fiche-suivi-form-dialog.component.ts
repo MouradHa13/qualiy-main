@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Project } from '../../../core/models/app.models';
+import { Projet } from '../../../models/projet.model';
 
 @Component({
   selector: 'app-fiche-suivi-form-dialog',
@@ -22,13 +22,13 @@ export class FicheSuiviFormDialogComponent {
   ficheForm = this.fb.group({
     sujet: ['', Validators.required],
     avancement: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-    problemes: ['', Validators.required],
-    decisions: ['', Validators.required],
-    indicateurs: ['', Validators.required],
+    problemes: [''],
+    decisions: [''],
+    indicateurs: [''],
     observations: ['']
   });
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { project: Project, ficheToEdit?: any }) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { project: Projet, ficheToEdit?: any }) {
     if (data.ficheToEdit) {
       this.ficheForm.patchValue(data.ficheToEdit);
     }

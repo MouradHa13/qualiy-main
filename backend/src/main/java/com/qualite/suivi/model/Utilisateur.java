@@ -17,9 +17,12 @@ public class Utilisateur extends AbstractAuditEntity {
     @Id
     private String id;
     private String nom;
+    private String prenom;
     @Indexed(unique = true)
     private String email;
     private String motDePasse;
+    private boolean actif = false;
+    private Date lastSeen;
     private Date dateCreation = new Date();
 
     @DBRef
