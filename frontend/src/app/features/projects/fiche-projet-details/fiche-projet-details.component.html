@@ -1,0 +1,192 @@
+<div class="page-container space-y-10 animate-slide-up no-print" *ngIf="projet">
+  <!-- Header Section -->
+  <div class="glass-card p-10 relative overflow-hidden">
+    <div class="absolute -right-20 -top-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+    <div class="absolute -left-10 bottom-0 w-40 h-40 bg-accent/5 rounded-full blur-2xl"></div>
+
+    <div class="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10">
+      <div class="flex items-start gap-6">
+        <button (click)="goBack()" class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 shadow-premium text-gray-500 hover:text-primary transition-all group shrink-0">
+          <span class="material-icons group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        </button>
+        <div>
+          <div class="flex flex-wrap items-center gap-4 mb-3">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tighter">{{ projet.nomProjet }}</h1>
+            <span [ngClass]="getStatusClass(projet.statut)" class="status-badge !px-5 !py-2 !text-[11px] shadow-sm">
+              {{ projet.statut }}
+            </span>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-lg font-medium max-w-4xl leading-relaxed">
+            {{ projet.description || 'Optimisation des standards de qualité et conformité réglementaire pour l\'excellence industrielle.' }}
+          </p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4 shrink-0 w-full xl:w-auto">
+        <button (click)="printFiche()" class="flex-1 xl:flex-none btn-glass !text-primary border-primary/20 bg-primary/5 h-14 !px-8">
+          <span class="material-icons mr-2">print</span>
+          <span class="text-xs font-black uppercase tracking-widest">Imprimer Fiche</span>
+        </button>
+        <button (click)="exportProjectDetails()" class="flex-1 xl:flex-none btn-glass !text-gray-900 dark:!text-white border-gray-200 dark:border-white/10 h-14 !px-8">
+          <span class="material-icons mr-2">download</span>
+          <span class="text-xs font-black uppercase tracking-widest">Rapport</span>
+        </button>
+        <button (click)="editProject()" class="flex-1 xl:flex-none btn-primary h-14 !px-8">
+          <span class="material-icons mr-2">edit_square</span>
+          <span class="text-xs font-black uppercase tracking-widest">Éditer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <!-- Main Content Area -->
+    <div class="lg:col-span-2 space-y-10">
+      
+      <!-- Objectives Widget -->
+      <div class="glass-card p-10">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+            <span class="material-icons">flag</span>
+          </div>
+          <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Objectifs Stratégiques</h3>
+        </div>
+        <div class="bg-gray-50/50 dark:bg-white/5 p-8 rounded-3xl border border-gray-100 dark:border-white/5">
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed font-semibold text-xl italic">
+            "{{ projet.objectifs }}"
+          </p>
+        </div>
+      </div>
+
+      <!-- Timeline Tracking -->
+      <div class="glass-card p-10">
+        <div class="flex items-center gap-4 mb-10">
+          <div class="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shadow-inner">
+            <span class="material-icons">history_edu</span>
+          </div>
+          <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Journal d'Audit & Suivi</h3>
+        </div>
+        
+        <div class="relative space-y-10 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-primary/20 before:via-accent/20 before:to-transparent">
+          @for (f of projet.fichesSuivi; track f.id) {
+            <div class="relative pl-12 group">
+              <!-- Timeline Dot -->
+              <div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-white dark:bg-darkCard border-4 border-gray-100 dark:border-white/10 shadow-lg flex items-center justify-center z-10 group-hover:scale-125 group-hover:border-primary transition-all duration-500">
+                <span class="material-icons text-primary text-sm font-black">done</span>
+              </div>
+              
+              <!-- Fiche Card -->
+              <div class="glass-card-interactive p-8 !shadow-sm hover:!shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tighter">{{ f.dateSaisie | date:'dd MMM yyyy' }}</span>
+                    <span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Saisie Officielle</span>
+                  </div>
+                  <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/10">
+                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avancement</span>
+                    <span class="text-xl font-black text-primary tracking-tighter">{{ f.avancement }}%</span>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="p-5 rounded-2xl bg-danger/5 border border-danger/10 group/item">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="material-icons text-danger text-sm">report_problem</span>
+                      <span class="text-[10px] font-black text-danger uppercase tracking-[0.2em]">Obstacles</span>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 text-sm font-bold leading-relaxed">{{ f.problemes || 'Aucun incident majeur signalé.' }}</p>
+                  </div>
+                  <div class="p-5 rounded-2xl bg-success/5 border border-success/10 group/item">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="material-icons text-success text-sm">verified</span>
+                      <span class="text-[10px] font-black text-success uppercase tracking-[0.2em]">Actions prises</span>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 text-sm font-bold leading-relaxed">{{ f.decisions || 'Continuité opérationnelle confirmée.' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          
+          @if (!projet.fichesSuivi?.length) {
+            <div class="text-center py-20 bg-gray-50/50 dark:bg-white/5 rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+              <span class="material-icons text-7xl text-gray-200 dark:text-white/5 mb-4 animate-pulse">inventory_2</span>
+              <p class="text-xl font-black text-gray-900 dark:text-white">Aucun historique disponible</p>
+              <p class="text-gray-500 text-sm mt-1">Commencez le suivi pour générer la chronologie.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Layout -->
+    <div class="space-y-10">
+      <!-- Planification Stats -->
+      <div class="glass-card p-10 overflow-hidden relative">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-warning/5 rounded-full blur-2xl"></div>
+        <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-8">Planification</h3>
+        
+        <div class="space-y-8">
+          <div class="flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 shadow-premium flex flex-col items-center justify-center border border-gray-100 dark:border-white/10">
+              <span class="text-[9px] font-black text-gray-400 uppercase">DÉB.</span>
+              <span class="text-xl font-black text-gray-900 dark:text-white tracking-tighter">{{ projet.dateDebut | date:'dd' }}</span>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-black text-lg">{{ projet.dateDebut | date:'MMMM yyyy' }}</p>
+              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Lancement du projet</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 shadow-premium flex flex-col items-center justify-center border border-gray-100 dark:border-white/10">
+              <span class="text-[9px] font-black text-gray-400 uppercase">FIN.</span>
+              <span class="text-xl font-black text-gray-900 dark:text-white tracking-tighter">{{ projet.dateFinPrevue | date:'dd' }}</span>
+            </div>
+            <div>
+              <p class="text-gray-900 dark:text-white font-black text-lg">{{ projet.dateFinPrevue | date:'MMMM yyyy' }}</p>
+              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Échéance finale</p>
+            </div>
+          </div>
+
+          <div class="pt-8 border-t border-gray-100 dark:border-white/5">
+            <div class="flex justify-between items-end mb-4">
+              <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Progression Totale</span>
+              <span class="text-2xl font-black text-primary tracking-tighter">{{ projet.avancement || 0 }}%</span>
+            </div>
+            <div class="h-4 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden p-[3px]">
+              <div class="bg-gradient-to-r from-primary to-accent h-full rounded-full shadow-glow-primary transition-all duration-1000 ease-out" [style.width.%]="projet.avancement || 0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsible Widget -->
+      <div class="glass-card p-10 overflow-hidden relative">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-success/5 rounded-full blur-2xl"></div>
+        <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-8">Responsable</h3>
+        
+        <div class="p-6 rounded-[2rem] bg-gray-50/50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-primary/30 transition-all group cursor-pointer">
+          <div class="flex items-center gap-5 mb-5">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-black text-2xl shadow-premium group-hover:scale-110 transition-transform">
+              {{ ($any(projet.chefDeProjet)?.nom || 'NA').substring(0, 2).toUpperCase() }}
+            </div>
+            <div>
+              <p class="text-xl font-black text-gray-900 dark:text-white leading-tight tracking-tight">{{ $any(projet.chefDeProjet)?.nom || 'Non assigné' }}</p>
+              <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">Chef de Projet Senior</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 text-gray-500 dark:text-gray-400">
+            <span class="material-icons text-sm">alternate_email</span>
+            <span class="text-sm font-semibold truncate">{{ $any(projet.chefDeProjet)?.email || 'contact@tunisie-qualite.tn' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Print View (Only visible during printing) -->
+  <div class="print-only">
+    <app-project-print-view [projet]="projet"></app-project-print-view>
+  </div>
+</div>
+

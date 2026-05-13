@@ -1,0 +1,119 @@
+<div class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Mon Profil</h1>
+        <p class="text-gray-600 dark:text-gray-400">Gérez vos informations personnelles et préférences</p>
+      </div>
+      
+      <button 
+        (click)="toggleEdit()" 
+        class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150"
+      >
+        <mat-icon class="mr-2 text-sm">{{ isEditing ? 'close' : 'edit' }}</mat-icon>
+        {{ isEditing ? 'Annuler' : 'Modifier le profil' }}
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Avatar & Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 flex flex-col items-center text-center">
+          <div class="relative mb-6">
+            <div class="h-32 w-32 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 p-1">
+              <div class="h-full w-full rounded-full bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                <span class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-tr from-blue-600 to-purple-600">
+                  {{ (currentUser?.prenom?.[0] || currentUser?.email?.[0] || 'U') | uppercase }}
+                </span>
+              </div>
+            </div>
+            <div class="absolute bottom-1 right-1 h-6 w-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full"></div>
+          </div>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {{ currentUser?.prenom }} {{ currentUser?.nom }}
+          </h2>
+          <p class="text-blue-600 dark:text-blue-400 font-medium mb-4">{{ currentUser?.role?.nomRole }}</p>
+          
+          <div class="w-full pt-6 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-3">
+            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+              <mat-icon class="mr-3 text-lg opacity-70">mail</mat-icon>
+              {{ currentUser?.email }}
+            </div>
+            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+              <mat-icon class="mr-3 text-lg opacity-70">business</mat-icon>
+              {{ profileForm.get('structure')?.value }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Form -->
+      <div class="lg:col-span-2">
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="p-8 border-b border-gray-100 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Détails du compte</h3>
+            
+            <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Prénom</label>
+                  <input 
+                    type="text" 
+                    formControlName="prenom"
+                    [readonly]="!isEditing"
+                    [ngClass]="{'bg-gray-50 dark:bg-gray-900 cursor-not-allowed': !isEditing}"
+                    class="block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nom de famille</label>
+                  <input 
+                    type="text" 
+                    formControlName="nom"
+                    [readonly]="!isEditing"
+                    [ngClass]="{'bg-gray-50 dark:bg-gray-900 cursor-not-allowed': !isEditing}"
+                    class="block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Adresse Email</label>
+                <input 
+                  type="email" 
+                  formControlName="email"
+                  class="block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-500 cursor-not-allowed"
+                >
+                <p class="mt-2 text-xs text-gray-500">L'email ne peut pas être modifié pour des raisons de sécurité.</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Structure associée</label>
+                <input 
+                  type="text" 
+                  formControlName="structure"
+                  readonly
+                  class="block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-500 cursor-not-allowed"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="isEditing" class="px-8 py-5 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+             <button 
+              type="submit" 
+              [disabled]="profileForm.invalid || isLoading"
+              class="inline-flex items-center px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition duration-150"
+            >
+              <mat-icon *ngIf="!isLoading" class="mr-2 text-sm">save</mat-icon>
+              <span *ngIf="isLoading" class="mr-2 h-4 w-4 border-2 border-white border-t-transparent animate-spin rounded-full"></span>
+              Enregistrer les modifications
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

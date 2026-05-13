@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 2rem !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+::ng-deep .mat-mdc-dialog-content {
+    max-height: 70vh !important;
+}

@@ -1,0 +1,204 @@
+  <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-2xl shadow-xl text-white">
+          <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+            <mat-icon>cloud_download</mat-icon>
+            Exporter les rapports
+          </h3>
+          <p class="text-blue-200 text-sm mb-5">Téléchargez les indicateurs de performance en PDF.</p>
+
+          <div class="space-y-3">
+            <button (click)="downloadPdf()" [disabled]="downloadingPdf"
+              class="w-full flex items-center justify-between px-4 py-3 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl transition disabled:opacity-60">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-red-500 rounded-lg">
+                  <mat-icon class="text-white text-sm">picture_as_pdf</mat-icon>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm font-semibold">Rapport PDF</p>
+                  <p class="text-xs text-blue-200">Format natif imprimable</p>
+                </div>
+              </div>
+              <mat-icon>{{ downloadingPdf ? 'hourglass_empty' : 'download' }}</mat-icon>
+            </button>
+
+            <!-- <button (click)="downloadExcel()" [disabled]="downloadingExcel"
+              class="w-full flex items-center justify-between px-4 py-3 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl transition disabled:opacity-60">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-emerald-500 rounded-lg">
+                  <mat-icon class="text-white text-sm">table_chart</mat-icon>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm font-semibold">Rapport Excel</p>
+                  <p class="text-xs text-blue-200">Feuille de calcul éditable</p>
+                </div>
+              </div>
+              <mat-icon>{{ downloadingExcel ? 'hourglass_empty' : 'download' }}</mat-icon>
+            </button> -->
+          </div>
+        </div>
+<div #dashboardContent class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">📊 KPI & Rapports</h1>
+        <p class="text-gray-500 dark:text-gray-400">Analyse des indicateurs de performance qualité</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- <button (click)="downloadExcel()"
+          [disabled]="downloadingExcel"
+          class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow transition disabled:opacity-60">
+          <mat-icon class="text-base">table_chart</mat-icon>
+          {{ downloadingExcel ? 'Export...' : 'Exporter Excel' }}
+        </button> -->
+        <!-- <button (click)="downloadPdf()"
+          [disabled]="downloadingPdf"
+          class="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow transition disabled:opacity-60">
+          <mat-icon class="text-base">picture_as_pdf</mat-icon>
+          {{ downloadingPdf ? 'Export...' : 'Exporter PDF' }}
+        </button> -->
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="flex items-center justify-center p-16">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- Total Projets -->
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <mat-icon class="text-blue-600 dark:text-blue-400">folder_open</mat-icon>
+            </div>
+            <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Total</span>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.totalProjets }}</div>
+          <p class="text-sm text-gray-500 mt-1">Projets actifs</p>
+        </div>
+
+        <!-- Avancement Moyen -->
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2.5 bg-green-100 dark:bg-green-900/30 rounded-xl">
+              <mat-icon class="text-green-600 dark:text-green-400">trending_up</mat-icon>
+            </div>
+            <span class="text-xs font-semibold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">Qualité</span>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.avancementMoyen }}%</div>
+          <p class="text-sm text-gray-500 mt-1">Avancement moyen</p>
+        </div>
+
+        <!-- Fiches de Suivi -->
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+              <mat-icon class="text-purple-600 dark:text-purple-400">description</mat-icon>
+            </div>
+            <span class="text-xs font-semibold text-purple-600 bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded-full">Suivi</span>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.totalFiches }}</div>
+          <p class="text-sm text-gray-500 mt-1">Fiches enregistrées</p>
+        </div>
+
+        <!-- En Retard -->
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2.5 bg-red-100 dark:bg-red-900/30 rounded-xl">
+              <mat-icon class="text-red-600 dark:text-red-400">warning</mat-icon>
+            </div>
+            <span class="text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">Alerte</span>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.projetsEnRetard }}</div>
+          <p class="text-sm text-gray-500 mt-1">Projets en retard</p>
+        </div>
+      </div>
+
+      <!-- Visual KPI: Gauge-style progress bars -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Statut Distribution -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+            <mat-icon class="text-blue-500">donut_large</mat-icon>
+            Répartition par statut
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-600 dark:text-gray-400 font-medium">✅ Terminés</span>
+                <span class="font-bold text-green-600">{{ stats.projetsTermines || 0 }} projets</span>
+              </div>
+              <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-green-500 rounded-full transition-all duration-700"
+                     [style.width.%]="stats.totalProjets > 0 ? ((stats.projetsTermines || 0) / stats.totalProjets * 100) : 0"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-600 dark:text-gray-400 font-medium">🔄 En cours</span>
+                <span class="font-bold text-blue-600">{{ stats.projetsEnCours || 0 }} projets</span>
+              </div>
+              <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full transition-all duration-700"
+                     [style.width.%]="stats.totalProjets > 0 ? ((stats.projetsEnCours || 0) / stats.totalProjets * 100) : 0"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-600 dark:text-gray-400 font-medium">⚠️ En retard</span>
+                <span class="font-bold text-red-600">{{ stats.projetsEnRetard || 0 }} projets</span>
+              </div>
+              <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-red-500 rounded-full transition-all duration-700"
+                     [style.width.%]="stats.totalProjets > 0 ? ((stats.projetsEnRetard || 0) / stats.totalProjets * 100) : 0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Section -->
+    
+      </div>
+
+      <!-- Performance Summary -->
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+          <mat-icon class="text-purple-500">insights</mat-icon>
+          Résumé Performance Globale
+        </h3>
+        <div class="flex items-center gap-6">
+          <!-- CSS Gauge -->
+          <div class="relative w-28 h-28 flex-shrink-0">
+            <svg class="w-28 h-28 -rotate-90" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"></circle>
+              <circle cx="18" cy="18" r="15.9" fill="none"
+                stroke="#3b82f6" stroke-width="3"
+                stroke-linecap="round"
+                [attr.stroke-dasharray]="stats.avancementMoyen + ' 100'"
+                stroke-dashoffset="0">
+              </circle>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-xl font-bold text-gray-900 dark:text-white">{{ stats.avancementMoyen }}%</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-1">Score de conformité qualité global</p>
+            <p class="text-gray-900 dark:text-white font-semibold text-lg">
+              <span *ngIf="stats.avancementMoyen >= 80" class="text-green-600">🟢 Excellent</span>
+              <span *ngIf="stats.avancementMoyen >= 60 && stats.avancementMoyen < 80" class="text-blue-600">🔵 Satisfaisant</span>
+              <span *ngIf="stats.avancementMoyen < 60" class="text-orange-600">🟠 À améliorer</span>
+            </p>
+            <p class="text-sm text-gray-400 mt-2">Basé sur {{ stats.totalProjets }} projets et {{ stats.totalFiches }} fiches de suivi</p>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

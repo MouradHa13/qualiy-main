@@ -1,0 +1,138 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProjetService } from '../../../services/projet.service';
+import { Project } from '../../../core/models/app.models';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { ProjectFormDialogComponent } from '../project-form-dialog/project-form-dialog.component';
+import jsPDF from 'jspdf';
+import { ProjectPrintViewComponent } from '../project-print-view/project-print-view.component';
+
+@Component({
+  selector: 'app-fiche-projet-details',
+  standalone: true,
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent],
+  templateUrl: './fiche-projet-details.component.html'
+})
+export class FicheProjetDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private projetService = inject(ProjetService);
+  private dialog = inject(MatDialog);
+  private toastr = inject(ToastrService);
+  
+  projet?: Project;
+
+  ngOnInit() {
+    this.loadProjectDetails();
+  }
+
+  loadProjectDetails() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.projetService.getById(id).subscribe((data: Project) => this.projet = data);
+    }
+  }
+
+  goBack() {
+    this.router.navigate(['/chef/projets']);
+  }
+
+  getStatusClass(statut: string) {
+    switch (statut?.toLowerCase()) {
+      case 'terminé': return 'bg-emerald-50 text-emerald-700 font-bold';
+      case 'en cours': return 'bg-blue-50 text-blue-700 font-bold';
+      case 'retard': return 'bg-red-50 text-red-700 font-bold';
+      default: return 'bg-slate-100 text-slate-700 font-bold';
+    }
+  }
+
+  printFiche() {
+    window.print();
+  }
+
+exportProjectDetails() {
+  if (!this.projet) return;
+
+  const doc = new jsPDF();
+  
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let yPosition = 20;
+  const margin = 15;
+  const maxWidth = pageWidth - (margin * 2);
+  
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Détails du Projet', margin, yPosition);
+  
+  yPosition += 15;
+  
+  doc.setDrawColor(0, 0, 0);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 10;
+  
+  const addField = (label: string, value: any) => {
+    if (yPosition > pageHeight - 20) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(`${label}:`, margin, yPosition);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const text = String(value || '-');
+    const lines = doc.splitTextToSize(text, maxWidth - 60);
+    doc.text(lines, margin + 60, yPosition);
+    
+    yPosition += (lines.length * 5) + 8;
+  };
+  
+  addField('Nom du Projet', this.projet.nomProjet);
+  addField('Description', this.projet.description);
+  addField('Objectifs', this.projet.objectifs);
+  addField('Date de Début', new Date(this.projet.dateDebut).toLocaleDateString('fr-FR'));
+  addField('Date Fin Prévue', new Date(this.projet.dateFinPrevue).toLocaleDateString('fr-FR'));
+  addField('Statut', this.projet.statut);
+  
+  yPosition += 10;
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(9);
+  doc.setTextColor(150, 150, 150);
+  doc.text(`Exporté le ${new Date().toLocaleDateString('fr-FR')}`, margin, pageHeight - 10);
+  
+  doc.save(`projet-${this.projet.nomProjet}-${new Date().toISOString().split('T')[0]}.pdf`);
+  this.toastr.success('Projet exporté en PDF avec succès');
+}
+
+  editProject() {
+    if (!this.projet) return;
+    
+    const dialogRef = this.dialog.open(ProjectFormDialogComponent, {
+      width: '650px',
+      maxWidth: '95vw',
+      panelClass: ['modern-dialog', 'overflow-hidden'],
+      data: { project: this.projet },
+      autoFocus: 'first-tabbable',
+      restoreFocus: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result && this.projet?.id) {
+        this.projetService.update(this.projet.id, result).subscribe({
+          next: () => {
+            this.toastr.success('Projet mis à jour avec succès');
+            this.loadProjectDetails();
+          },
+          error: () => this.toastr.error('Erreur lors de la mise à jour du projet')
+        });
+      }
+    });
+  }
+}

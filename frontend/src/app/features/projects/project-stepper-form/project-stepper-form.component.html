@@ -1,0 +1,281 @@
+<div class="glass-card p-0 overflow-hidden max-w-5xl mx-auto animate-scale-up">
+  <!-- Header -->
+  <div class="p-8 bg-gradient-to-r from-primary to-accent text-white flex justify-between items-center">
+    <div>
+      <h2 class="text-3xl font-black tracking-tighter mb-1">Nouvelle Fiche de Projet</h2>
+      <p class="text-white/80 text-sm font-medium uppercase tracking-widest">Système de Management de la Qualité</p>
+    </div>
+    <button (click)="onCancel()" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <div class="max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <mat-stepper linear #stepper class="custom-stepper">
+      <!-- STEP 1: IDENTIFICATION -->
+      <mat-step [stepControl]="projectForm">
+        <ng-template matStepLabel>Identification</ng-template>
+        <div class="p-8 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="form-label">Désignation Projet *</label>
+              <input matInput formControlName="nomProjet" class="input-field" placeholder="Ex: Projet Alpha">
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Désignation Client</label>
+              <input matInput formControlName="designationClient" class="input-field" placeholder="Ex: Direction Financière">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="form-label">Cadre Contractuel</label>
+              <input matInput formControlName="cadreContractuel" class="input-field">
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Caractère Projet</label>
+              <select formControlName="caractereProjet" class="input-field">
+                <option value="National">National</option>
+                <option value="Commun à l'Administration">Commun à l'Administration</option>
+                <option value="CNI">CNI</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Type Projet</label>
+              <select formControlName="typeProjet" class="input-field">
+                <option value="Nouveau">Nouveau</option>
+                <option value="Evolution">Évolution</option>
+                <option value="Refonte">Refonte</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="form-label">Date de début *</label>
+              <input type="date" formControlName="dateDebut" class="input-field">
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Date de fin prévue *</label>
+              <input type="date" formControlName="dateFinPrevue" class="input-field">
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-4">
+            <button type="button" mat-flat-button color="primary" matStepperNext class="btn-primary !px-8">Suivant</button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- STEP 2: CONTENT -->
+      <mat-step>
+        <ng-template matStepLabel>Contenu</ng-template>
+        <div class="p-8 space-y-6">
+          <div class="space-y-2">
+            <label class="form-label">Présentation</label>
+            <textarea formControlName="presentation" rows="3" class="input-field resize-none"></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="form-label">Historique (Cas de refonte ou amélioration)</label>
+            <textarea formControlName="historique" rows="3" class="input-field resize-none"></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="form-label">Périmètre</label>
+            <textarea formControlName="perimetre" rows="3" class="input-field resize-none"></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="form-label">Objectifs Stratégiques</label>
+            <textarea formControlName="objectifs" rows="3" class="input-field resize-none"></textarea>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" mat-stroked-button matStepperPrevious class="btn-glass !px-8">Retour</button>
+            <button type="button" mat-flat-button color="primary" matStepperNext class="btn-primary !px-8">Suivant</button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- STEP 3: ORGANISATION -->
+      <mat-step>
+        <ng-template matStepLabel>Organisation</ng-template>
+        <div class="p-8 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="form-label">Maître d'Ouvrage (Client)</label>
+              <input matInput formControlName="maitreOuvrage" class="input-field">
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Maître d'Œuvre (CNI)</label>
+              <input matInput formControlName="maitreOeuvre" class="input-field">
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <label class="form-label">Équipe du projet</label>
+              <button type="button" (click)="addEquipeMember()" class="text-primary text-xs font-black uppercase">+ Ajouter Membre</button>
+            </div>
+            <div formArrayName="equipeProjet" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div *ngFor="let member of equipeProjet.controls; let i=index" class="relative group">
+                <input [formControlName]="i" class="input-field pr-10" placeholder="Nom du membre">
+                <button type="button" (click)="removeEquipeMember(i)" class="absolute right-3 top-3 text-gray-300 hover:text-danger">
+                  <mat-icon class="scale-75">delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" mat-stroked-button matStepperPrevious class="btn-glass !px-8">Retour</button>
+            <button type="button" mat-flat-button color="primary" matStepperNext class="btn-primary !px-8">Suivant</button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- STEP 4: ESTIMATIONS -->
+      <mat-step>
+        <ng-template matStepLabel>Estimations</ng-template>
+        <div class="p-8 space-y-10">
+          <!-- Charges Table -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <h4 class="font-black text-gray-900 uppercase tracking-widest text-xs">Estimation des charges</h4>
+              <button type="button" (click)="addEstimationCharge()" class="text-primary text-xs font-black uppercase">+ Ajouter Ligne</button>
+            </div>
+            <div class="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-[10px] font-black uppercase tracking-wider text-gray-400">
+                  <tr>
+                    <th class="px-4 py-3">Prestations</th>
+                    <th class="px-4 py-3">Profil</th>
+                    <th class="px-4 py-3">Délai</th>
+                    <th class="px-4 py-3">Charge H/M</th>
+                    <th class="px-4 py-3">Livrables</th>
+                    <th class="px-4 py-3 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="estimationCharges">
+                  <tr *ngFor="let row of estimationCharges.controls; let i=index" [formGroupName]="i" class="border-t border-gray-50">
+                    <td class="p-2"><input formControlName="prestation" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="profil" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="periode" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="chargeHM" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="livrables" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2">
+                      <button (click)="removeEstimationCharge(i)" class="text-gray-300 hover:text-danger"><mat-icon class="scale-75">delete</mat-icon></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Budget Table -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <h4 class="font-black text-gray-900 uppercase tracking-widest text-xs">Estimation du budget</h4>
+              <button type="button" (click)="addEstimationBudget()" class="text-primary text-xs font-black uppercase">+ Ajouter Ligne</button>
+            </div>
+            <div class="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-[10px] font-black uppercase tracking-wider text-gray-400">
+                  <tr>
+                    <th class="px-4 py-3">Profils</th>
+                    <th class="px-4 py-3">Charge par Profil (H/M)</th>
+                    <th class="px-4 py-3">Budget (MD/HT)</th>
+                    <th class="px-4 py-3 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="estimationBudgets">
+                  <tr *ngFor="let row of estimationBudgets.controls; let i=index" [formGroupName]="i" class="border-t border-gray-50">
+                    <td class="p-2"><input formControlName="profil" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="chargeProfil" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="budget" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2">
+                      <button (click)="removeEstimationBudget(i)" class="text-gray-300 hover:text-danger"><mat-icon class="scale-75">delete</mat-icon></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" mat-stroked-button matStepperPrevious class="btn-glass !px-8">Retour</button>
+            <button type="button" mat-flat-button color="primary" matStepperNext class="btn-primary !px-8">Suivant</button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- STEP 5: FINAL DETAILS -->
+      <mat-step>
+        <ng-template matStepLabel>Planning & Risques</ng-template>
+        <div class="p-8 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="form-label">Délais Prévisionnels</label>
+              <textarea formControlName="delaisPrevisionnels" rows="2" class="input-field resize-none" placeholder="Ex: 6 mois..."></textarea>
+            </div>
+            <div class="space-y-2">
+              <label class="form-label">Risques Potentiels</label>
+              <textarea formControlName="risquesPotentiels" rows="2" class="input-field resize-none"></textarea>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="form-label">Pré-requis</label>
+            <textarea formControlName="preRequis" rows="2" class="input-field resize-none"></textarea>
+          </div>
+
+          <!-- Planning Table Mockup/Simplified -->
+          <div class="space-y-4 pt-6 border-t border-gray-100">
+            <div class="flex justify-between items-center">
+              <h4 class="font-black text-gray-900 uppercase tracking-widest text-xs">Planning Prévisionnel</h4>
+              <button type="button" (click)="addPlanningAction()" class="text-primary text-xs font-black uppercase">+ Ajouter Action</button>
+            </div>
+            <div class="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-[10px] font-black uppercase tracking-wider text-gray-400 text-center">
+                  <tr>
+                    <th class="px-4 py-3 text-left">Actions</th>
+                    <th class="px-4 py-3">Profil</th>
+                    <th class="px-4 py-3">Charge</th>
+                    <th class="px-4 py-3 border-l">M1</th>
+                    <th class="px-4 py-3">M2</th>
+                    <th class="px-4 py-3">M3</th>
+                    <th class="px-4 py-3">M4</th>
+                    <th class="px-4 py-3">M5</th>
+                    <th class="px-4 py-3">M6</th>
+                    <th class="px-4 py-3 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="planningActions">
+                  <tr *ngFor="let row of planningActions.controls; let i=index" [formGroupName]="i" class="border-t border-gray-50">
+                    <td class="p-2"><input formControlName="action" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2"><input formControlName="profil" class="input-field !h-10 !text-xs"></td>
+                    <td class="p-2 w-20"><input formControlName="chargeHM" class="input-field !h-10 !text-xs text-center"></td>
+                    <td class="p-2 border-l text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 1)" (change)="toggleMonth(i, 1)"></mat-checkbox></td>
+                    <td class="p-2 text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 2)" (change)="toggleMonth(i, 2)"></mat-checkbox></td>
+                    <td class="p-2 text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 3)" (change)="toggleMonth(i, 3)"></mat-checkbox></td>
+                    <td class="p-2 text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 4)" (change)="toggleMonth(i, 4)"></mat-checkbox></td>
+                    <td class="p-2 text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 5)" (change)="toggleMonth(i, 5)"></mat-checkbox></td>
+                    <td class="p-2 text-center"><mat-checkbox color="primary" class="scale-75" [checked]="isMonthSelected(i, 6)" (change)="toggleMonth(i, 6)"></mat-checkbox></td>
+                    <td class="p-2">
+                      <button type="button" (click)="removePlanningAction(i)" class="text-gray-300 hover:text-danger"><mat-icon class="scale-75">delete</mat-icon></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-8 border-t border-gray-100">
+            <button type="button" mat-stroked-button matStepperPrevious class="btn-glass !px-8">Retour</button>
+            <button type="submit" class="btn-primary !px-12 shadow-glow-primary">Confirmer & Créer le Projet</button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+    </div>
+  </form>
+</div>

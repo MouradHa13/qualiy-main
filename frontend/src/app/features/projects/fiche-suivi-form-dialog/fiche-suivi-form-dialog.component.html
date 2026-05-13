@@ -1,0 +1,75 @@
+<div class="glass-card !p-0 overflow-hidden border-none shadow-2xl">
+  <!-- Premium Header -->
+  <div class="p-8 bg-gradient-to-r from-primary to-accent text-white flex justify-between items-center relative overflow-hidden">
+    <div class="relative z-10">
+      <h2 class="text-2xl font-black tracking-tighter mb-1">Mise à jour du Suivi</h2>
+      <p class="text-white/80 text-xs font-medium uppercase tracking-widest">{{ data.project.nomProjet }}</p>
+    </div>
+    <button (click)="onCancel()" class="relative z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+      <mat-icon>close</mat-icon>
+    </button>
+    <!-- Background Decor -->
+    <div class="absolute -right-4 -top-4 opacity-10">
+      <mat-icon class="!text-[120px] !w-[120px] !h-[120px]">description</mat-icon>
+    </div>
+  </div>
+
+  <mat-dialog-content class="mat-typography !m-0 !p-8 custom-scrollbar max-h-[60vh]">
+    <form [formGroup]="ficheForm" class="space-y-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Sujet du Suivi *</label>
+          <div class="relative group">
+            <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">topic</mat-icon>
+            <input matInput formControlName="sujet" class="input-field !pl-12" placeholder="Ex: Revue hebdomadaire">
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Taux d'Avancement (%) *</label>
+          <div class="relative group">
+            <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">trending_up</mat-icon>
+            <input matInput type="number" formControlName="avancement" class="input-field !pl-12" min="0" max="100">
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Problèmes Rencontrés</label>
+          <textarea matInput formControlName="problemes" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Quels sont les obstacles actuels..."></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Décisions Coordonnées</label>
+          <textarea matInput formControlName="decisions" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Quelles actions ont été décidées..."></textarea>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Indicateurs de Performance</label>
+          <textarea matInput formControlName="indicateurs" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="KPIs, métriques de qualité..."></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Observations Additionnelles</label>
+          <textarea matInput formControlName="observations" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Notes ou remarques libres..."></textarea>
+        </div>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <div class="p-6 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+    <button (click)="onCancel()" class="btn-secondary !bg-transparent !border-none hover:!bg-slate-100">Annuler</button>
+    <button [disabled]="ficheForm.invalid" (click)="onSave()" 
+            class="btn-primary !px-10 shadow-glow-primary group">
+      <span class="flex items-center">
+        Soumettre la Fiche
+        <mat-icon class="ml-2 !text-lg group-hover:translate-x-1 transition-transform">send</mat-icon>
+      </span>
+    </button>
+  </div>
+</div>
