@@ -1,5 +1,6 @@
 package com.qualite.suivi.controller;
 
+import com.qualite.suivi.dto.ForgotPasswordRequest;
 import com.qualite.suivi.dto.JwtResponse;
 import com.qualite.suivi.dto.LoginRequest;
 import com.qualite.suivi.dto.MessageResponse;
@@ -11,6 +12,7 @@ import com.qualite.suivi.repository.StructureRepository;
 import com.qualite.suivi.repository.UtilisateurRepository;
 import com.qualite.suivi.security.JwtUtils;
 import com.qualite.suivi.security.UserDetailsImpl;
+import com.qualite.suivi.service.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,9 @@ public class AuthController {
 
     @Autowired
     PasswordEncoder encoder;
+    
+    @Autowired
+    NotificationService notificationService;
 
     @Autowired
     JwtUtils jwtUtils;
@@ -144,5 +149,19 @@ public class AuthController {
         utilisateurRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        System.out.println("DEBUG: Password reset request for email: " + request.getEmail());
+        utilisateurRepository.findByEmail(request.getEmail()).ifPresentOrElse(user -> {
+            System.out.println("DEBUG: User found: " + user.getNom());
+            String message = "Demande de réinitialisation de mot de passe pour : " + user.getNom() + " (" + user.getEmail() + ")";
+            notificationService.notifyAdmins(message, "WARNING");
+        }, () -> {
+            System.out.println("DEBUG: User NOT found for email: " + request.getEmail());
+        });
+        
+        return ResponseEntity.ok(new MessageResponse("Si votre email existe dans notre base, l'administrateur a été notifié."));
     }
 }

@@ -91,6 +91,10 @@ export class AuthService {
     return this.currentUser?.roles?.some(r => r.nomRole === roleNom) || false;
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/auth/forgot-password`, { email });
+  }
+
   private checkToken() {
     const token = this.getToken();
     const savedUser = localStorage.getItem('user');

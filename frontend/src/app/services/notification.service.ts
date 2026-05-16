@@ -35,6 +35,10 @@ export class NotificationService {
     return this.http.put<void>(`${this.apiUrl}/read-all`, {});
   }
 
+  deleteNotification(id: string | number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
   envoyerNotification(destinataireId: number, message: string, type: string = 'INFO'): Observable<Notification> {
     return this.http.post<Notification>(this.apiUrl, {
       destinataire: { id: destinataireId },

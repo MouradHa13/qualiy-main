@@ -29,42 +29,45 @@ export class KpiService {
   // Dynamically calculating GlobalStats by calling actual APIs
   getGlobalStats(): Observable<GlobalStats> {
     const isAdmin = this.authService.hasRole(RoleNom.ADMIN);
-    const users$ = isAdmin 
-      ? this.http.get<any[]>(`${environment.apiUrl}/api/users`).pipe(catchError(() => of([] as any[])))
-      : of([] as any[]);
-      
+    
+    const users$ = this.http.get<any[]>(`${environment.apiUrl}/api/users`).pipe(catchError(() => of([] as any[])));
+    const history$ = this.http.get<any[]>(`${environment.apiUrl}/api/historique`).pipe(catchError(() => of([] as any[])));
+    const nomenclatures$ = this.http.get<any[]>(`${environment.apiUrl}/api/nomenclatures`).pipe(catchError(() => of([] as any[])));
+    const notifications$ = this.http.get<any[]>(`${environment.apiUrl}/api/notifications/mes-notifications`).pipe(catchError(() => of([] as any[])));
     const projets$ = this.http.get<any[]>(`${environment.apiUrl}/api/projets`).pipe(catchError(() => of([] as any[])));
-    const fiches$ = this.http.get<any[]>(`${environment.apiUrl}/api/fiches-suivi`).pipe(catchError(() => of([] as any[])));
 
     return forkJoin({
       users: users$,
-      projets: projets$,
-      fiches: fiches$
+      history: history$,
+      nomenclatures: nomenclatures$,
+      notifications: notifications$,
+      projets: projets$
     }).pipe(
       map(res => {
         const totalUsers = res.users?.length || 0;
-        const totalProjets = res.projets?.length || 0;
-        const totalFiches = res.fiches?.length || 0;
+        const totalProjets = res.history?.length || 0; // Using history count for "Historique" card
+        const totalFiches = res.nomenclatures?.length || 0; // Using nomenclature count for "Nomenclatures" card
+        const notificationsEnvoyees = res.notifications?.length || 0;
         
         const admin = res.users?.filter(u => u.roles?.some((r: any) => r.nomRole === 'ADMIN')).length || 0;
         const chef = res.users?.filter(u => u.roles?.some((r: any) => r.nomRole === 'CHEF_PROJET')).length || 0;
         const pilote = res.users?.filter(u => u.roles?.some((r: any) => r.nomRole === 'PILOTE_QUALITE')).length || 0;
 
-        // Mock Projects by month / week, here returning a simple distribution based on total projects
+        const totalProjectsCount = res.projets?.length || 0;
         const projetsParMois = [
-          Math.floor(totalProjets * 0.1),
-          Math.floor(totalProjets * 0.2),
-          Math.floor(totalProjets * 0.3),
-          Math.floor(totalProjets * 0.4)
+          Math.floor(totalProjectsCount * 0.1),
+          Math.floor(totalProjectsCount * 0.2),
+          Math.floor(totalProjectsCount * 0.3),
+          Math.floor(totalProjectsCount * 0.4)
         ];
 
         return {
           totalUsers,
           totalProjets,
           totalFiches,
-          notificationsEnvoyees: totalFiches * 2, 
+          notificationsEnvoyees,
           projetsEnRetard: res.projets?.filter(p => p.statut === 'EN_RETARD').length || 0,
-          tauxCompletionMoyen: totalProjets > 0 ? res.projets.reduce((acc, p) => acc + (p.avancement || 0), 0) / totalProjets : 0,
+          tauxCompletionMoyen: totalProjectsCount > 0 ? res.projets.reduce((acc: any, p: any) => acc + (p.avancement || 0), 0) / totalProjectsCount : 0,
           kpiGlobalMoyen: 85,
           usersByRole: { admin, chef, pilote },
           projetsParMois

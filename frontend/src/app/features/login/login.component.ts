@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
@@ -11,7 +11,7 @@ import { Utilisateur, RoleNom } from '../../models/utilisateur.model';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -29,6 +29,8 @@ export class LoginComponent {
   });
 
   isPasswordVisible = false;
+  isForgotPasswordMode = false;
+  forgotPasswordEmail = '';
 
   togglePasswordVisibility() {
     this.isPasswordVisible = !this.isPasswordVisible;
@@ -64,6 +66,31 @@ export class LoginComponent {
       error: (err: any) => {
         this.spinner.hide();
         this.toastr.error('Email ou mot de passe incorrect', 'Erreur de connexion');
+      }
+    });
+  }
+
+  toggleForgotPasswordMode() {
+    this.isForgotPasswordMode = !this.isForgotPasswordMode;
+    this.forgotPasswordEmail = this.loginForm.get('email')?.value || '';
+  }
+
+  onForgotPassword() {
+    if (!this.forgotPasswordEmail || !this.forgotPasswordEmail.includes('@')) {
+      this.toastr.warning('Veuillez saisir une adresse e-mail valide');
+      return;
+    }
+
+    this.spinner.show();
+    this.authService.forgotPassword(this.forgotPasswordEmail).subscribe({
+      next: (res) => {
+        this.spinner.hide();
+        this.toastr.success(res.message || 'Demande envoyée à l\'administrateur');
+        this.isForgotPasswordMode = false;
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Erreur lors de l\'envoi de la demande');
       }
     });
   }

@@ -33,6 +33,7 @@ export const routes: Routes = [
         ]
       },
       { path: 'nomenclatures', loadComponent: () => import('./features/admin/admin-nomenclatures/admin-nomenclatures.component').then(m => m.AdminNomenclaturesComponent) },
+      { path: 'notifications', loadComponent: () => import('./features/admin/notifications/notifications.component').then(m => m.AdminNotificationsComponent) },
       { path: 'history', loadComponent: () => import('./features/history/history-list/history-list.component').then(m => m.HistoryListComponent) }
     ]
   },

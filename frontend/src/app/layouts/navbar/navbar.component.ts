@@ -1,24 +1,39 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
 import { Utilisateur } from '../../models/utilisateur.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
   authService = inject(AuthService);
   userService = inject(UserService);
+  notificationService = inject(NotificationService);
   fb = inject(FormBuilder);
   toastr = inject(ToastrService);
+
+  notifications: any[] = [];
+  showNotificationsDropdown = false;
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.showNotificationsDropdown = false;
+    }
+  }
 
   user$ = this.authService.currentUser$;
   isDarkMode = false;
@@ -49,6 +64,44 @@ export class NavbarComponent {
           email: user.email || ''
         });
       }
+    });
+
+    this.loadNotifications();
+  }
+
+  loadNotifications() {
+    this.notificationService.getAllNotifications().subscribe({
+      next: (data) => {
+        this.notifications = data.sort((a: any, b: any) => 
+          new Date(b.dateEnvoi).getTime() - new Date(a.dateEnvoi).getTime()
+        );
+      }
+    });
+  }
+
+  get unreadCount(): number {
+    return this.notifications.filter(n => !n.lu).length;
+  }
+
+  getNotificationsLink(user: any): string {
+    if (!user) return '/login';
+    const role = this.getUserRole(user);
+    if (role === 'ADMIN') return '/admin/notifications';
+    if (role === 'CHEF_PROJET') return '/chef/history'; // or dedicated page
+    if (role === 'PILOTE_QUALITE') return '/pilote/notifications';
+    return '/dashboard';
+  }
+
+  markAllAsRead() {
+    this.notificationService.marquerToutCommeLue().subscribe(() => {
+      this.loadNotifications();
+    });
+  }
+
+  markAsRead(id: any, event?: Event) {
+    if (event) event.stopPropagation();
+    this.notificationService.markAsRead(id).subscribe(() => {
+      this.loadNotifications();
     });
   }
 
