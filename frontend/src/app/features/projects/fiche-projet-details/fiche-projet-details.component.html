@@ -23,35 +23,49 @@
           </div>
         </div>
         
-        <div class="flex items-center gap-4 shrink-0 w-full xl:w-auto">
-          <button (click)="setTab('dashboard')" [class.bg-primary]="activeTab === 'dashboard'" [class.text-white]="activeTab === 'dashboard'" class="flex-1 xl:flex-none btn-glass !text-gray-900 dark:!text-white border-gray-200 dark:border-white/10 h-14 !px-6 transition-colors">
-            <span class="material-icons mr-2">dashboard</span>
-            <span class="text-xs font-black uppercase tracking-widest">Dashboard</span>
-          </button>
-          <button (click)="setTab('ficheTest')" [class.bg-primary]="activeTab === 'ficheTest'" [class.text-white]="activeTab === 'ficheTest'" class="flex-1 xl:flex-none btn-glass !text-gray-900 dark:!text-white border-gray-200 dark:border-white/10 h-14 !px-6 transition-colors">
-            <span class="material-icons mr-2">fact_check</span>
-            <span class="text-xs font-black uppercase tracking-widest">Fiche de Test</span>
-          </button>
+        <div class="flex flex-wrap items-center gap-4 shrink-0 w-full xl:w-auto">
+          <!-- Navigation segmented controller -->
+          <div class="flex items-center gap-1 bg-slate-100/80 dark:bg-white/5 p-1.5 rounded-2xl border border-slate-200/50 dark:border-white/5 shadow-inner">
+            <button (click)="setTab('dashboard')" 
+                    [ngClass]="activeTab === 'dashboard' ? 'bg-white dark:bg-slate-800 text-primary shadow-sm font-black' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium'" 
+                    class="flex items-center gap-2 h-11 px-5 rounded-xl text-xs uppercase tracking-widest transition-all">
+              <span class="material-icons text-sm">dashboard</span>
+              Dashboard
+            </button>
+            <button (click)="setTab('ficheTest')" 
+                    [ngClass]="activeTab === 'ficheTest' ? 'bg-white dark:bg-slate-800 text-primary shadow-sm font-black' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium'" 
+                    class="flex items-center gap-2 h-11 px-5 rounded-xl text-xs uppercase tracking-widest transition-all">
+              <span class="material-icons text-sm">fact_check</span>
+              Fiche de Test
+            </button>
+          </div>
           
-          <div class="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+          <div class="w-px h-8 bg-gray-200 dark:bg-gray-700 hidden sm:block mx-1"></div>
           
-          <button *ngIf="activeTab === 'dashboard'" (click)="printFiche()" class="flex-1 xl:flex-none btn-glass !text-primary border-primary/20 bg-primary/5 h-14 !px-6">
-            <span class="material-icons mr-2">print</span>
-            <span class="text-xs font-black uppercase tracking-widest">Imprimer Projet</span>
-          </button>
-          <button *ngIf="activeTab === 'ficheTest'" (click)="printFiche()" class="flex-1 xl:flex-none btn-glass !text-primary border-primary/20 bg-primary/5 h-14 !px-6">
-            <span class="material-icons mr-2">print</span>
-            <span class="text-xs font-black uppercase tracking-widest">Imprimer Fiche Test</span>
-          </button>
-          
-          <button *ngIf="activeTab === 'dashboard'" (click)="exportProjectDetails()" class="flex-1 xl:flex-none btn-glass !text-gray-900 dark:!text-white border-gray-200 dark:border-white/10 h-14 !px-6 hidden md:flex">
-            <span class="material-icons mr-2">download</span>
-            <span class="text-xs font-black uppercase tracking-widest">Rapport</span>
-          </button>
-          <button *ngIf="activeTab === 'dashboard'" (click)="editProject()" class="flex-1 xl:flex-none btn-primary h-14 !px-6">
-            <span class="material-icons mr-2">edit_square</span>
-            <span class="text-xs font-black uppercase tracking-widest">Éditer</span>
-          </button>
+          <!-- Tool Actions Group -->
+          <div class="flex items-center gap-3">
+            <!-- Print Vue (Context-aware) -->
+            <button (click)="printFiche()" 
+                    class="btn-glass !h-12 !w-12 !p-0 !text-primary hover:!bg-primary/10 hover:!text-primary border-primary/20 bg-primary/5 flex items-center justify-center rounded-xl" 
+                    [title]="activeTab === 'dashboard' ? 'Imprimer le Projet' : 'Imprimer la Fiche Test'">
+              <span class="material-icons text-lg">print</span>
+            </button>
+            
+            <!-- Download PDF Report (Only for dashboard) -->
+            <button *ngIf="activeTab === 'dashboard'" 
+                    (click)="exportProjectDetails()" 
+                    class="btn-glass !h-12 !w-12 !p-0 !text-gray-600 dark:!text-gray-300 border-gray-200 dark:border-white/10 hover:border-primary/30 transition-all flex items-center justify-center rounded-xl" 
+                    title="Télécharger le Rapport PDF">
+              <span class="material-icons text-lg">download</span>
+            </button>
+            
+            <!-- Edit Project -->
+            <button (click)="editProject()" 
+                    class="btn-primary !h-12 !px-5 flex items-center gap-2 rounded-xl">
+              <span class="material-icons text-sm">edit_square</span>
+              <span class="text-xs font-black uppercase tracking-widest">Éditer</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -141,6 +155,11 @@
                         <!-- Edit Button -->
                         <button (click)="openEditFicheSuivi(f)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-primary/10 hover:text-primary transition-all text-gray-500" title="Modifier le suivi">
                           <span class="material-icons !text-lg">edit</span>
+                        </button>
+
+                        <!-- Print Button -->
+                        <button (click)="printFicheSuivi(f)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-accent/10 hover:text-accent transition-all text-gray-500" title="Imprimer le suivi">
+                          <span class="material-icons !text-lg">print</span>
                         </button>
 
                         <div class="w-px h-6 bg-gray-200 dark:bg-gray-700"></div>
@@ -257,8 +276,11 @@
   
   <!-- Print View (Only visible during printing) -->
   <div class="print-only">
-    <app-project-print-view *ngIf="activeTab === 'dashboard'" [projet]="projet"></app-project-print-view>
-    <app-fiche-test-print *ngIf="activeTab === 'ficheTest'" [ficheTest]="getPrintableFicheTest()" [projectName]="projet.nomProjet"></app-fiche-test-print>
+    <app-fiche-suivi-print *ngIf="selectedFicheSuiviToPrint" [ficheSuivi]="selectedFicheSuiviToPrint" [projectName]="projet.nomProjet"></app-fiche-suivi-print>
+    <ng-container *ngIf="!selectedFicheSuiviToPrint">
+      <app-project-print-view *ngIf="activeTab === 'dashboard'" [projet]="projet"></app-project-print-view>
+      <app-fiche-test-print *ngIf="activeTab === 'ficheTest'" [ficheTest]="getPrintableFicheTest()" [projectName]="projet.nomProjet"></app-fiche-test-print>
+    </ng-container>
   </div>
 </ng-container>
 

@@ -12,7 +12,10 @@
     <div class="flex items-center gap-3">
       <div class="glass-card flex items-center px-4 py-2 gap-3 border-slate-200/50">
         <span class="material-icons text-slate-400">search</span>
-        <input type="text" placeholder="Rechercher un projet..." class="bg-transparent border-none outline-none text-sm w-48 text-slate-600 dark:text-slate-300">
+        <input type="text" 
+               placeholder="Rechercher un projet..." 
+               (input)="onSearch($event)" 
+               class="bg-transparent border-none outline-none text-sm w-48 text-slate-600 dark:text-slate-300">
       </div>
       <button (click)="openAddProjectModal()" class="btn-primary h-12 !px-6 group shadow-glow-primary">
         <span class="material-icons mr-2 group-hover:rotate-90 transition-transform">add_circle</span>
@@ -90,7 +93,7 @@
 
       <!-- Project Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6" *ngIf="viewMode === 'grid'">
-        <div *ngFor="let p of mesProjets" 
+        <div *ngFor="let p of filteredProjets" 
              class="glass-card group hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden border-slate-200/60">
           <div class="p-6 space-y-6">
             <div class="flex justify-between items-start">
@@ -156,7 +159,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr *ngFor="let p of mesProjets" class="hover:bg-slate-50/50 transition-colors group">
+            <tr *ngFor="let p of filteredProjets" class="hover:bg-slate-50/50 transition-colors group">
               <td class="px-6 py-4">
                 <p class="font-black text-slate-900 dark:text-white">{{ p.nomProjet }}</p>
                 <p class="text-[10px] text-slate-400 uppercase tracking-widest">{{ p.dateFinPrevue | date:'dd MMM yyyy' }}</p>

@@ -31,6 +31,24 @@ export class ChefDashboardComponent implements OnInit {
   viewMode: 'grid' | 'list' = 'grid';
   mesProjets: Projet[] = [];
   recentFiches: FicheSuivi[] = [];
+  searchTerm: string = '';
+
+  onSearch(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    this.searchTerm = inputElement.value || '';
+  }
+
+  get filteredProjets(): Projet[] {
+    if (!this.searchTerm.trim()) {
+      return this.mesProjets;
+    }
+    const term = this.searchTerm.toLowerCase().trim();
+    return this.mesProjets.filter(p => 
+      p.nomProjet.toLowerCase().includes(term) || 
+      (p.description && p.description.toLowerCase().includes(term)) ||
+      (p.statut && p.statut.toLowerCase().includes(term))
+    );
+  }
 
   form!: FormGroup;
 
@@ -96,7 +114,8 @@ export class ChefDashboardComponent implements OnInit {
     this.mesProjets.forEach(p => {
       if (p.id) {
         this.ficheService.getFichesSuiviByProjet(p.id).subscribe((fiches: FicheSuivi[]) => {
-          this.recentFiches = [...this.recentFiches, ...fiches];
+          const safeFiches = fiches || [];
+          this.recentFiches = [...this.recentFiches, ...safeFiches];
           this.recentFiches.sort((a, b) => new Date(b.dateSaisie!).getTime() - new Date(a.dateSaisie!).getTime());
           this.recentFiches = this.recentFiches.slice(0, 5); // Keep last 5
           this.kpis.fichesSoumisesMois = this.recentFiches.length; // Simplified for now
@@ -214,6 +233,7 @@ export class ChefDashboardComponent implements OnInit {
         this.toastr.success('Fiche de suivi créée avec succès');
         this.recentFiches.unshift(res);
         this.form.reset({ projetId: '', sujetFiche: '' });
+        this.loadProjets();
       },
       error: (err) => {
         this.spinner.hide();

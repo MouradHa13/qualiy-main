@@ -67,7 +67,7 @@ public class FicheSuiviService {
     public List<FicheSuivi> getFichesSuiviByProjet(String projetId) {
         Projet projet = projetRepository.findById(projetId)
                 .orElseThrow(() -> new RuntimeException("Projet non trouvé"));
-        return projet.getFichesSuivi();
+        return projet.getFichesSuivi() != null ? projet.getFichesSuivi() : new ArrayList<>();
     }
 
     public List<FicheSuivi> getAllFichesSuivi() {

@@ -16,11 +16,12 @@ import { FicheTestService } from '../../../services/fiche-test.service';
 import { FicheTest } from '../../../models/fiche-test.model';
 import { FicheService } from '../../../services/fiche.service';
 import { FicheSuiviFormDialogComponent } from '../fiche-suivi-form-dialog/fiche-suivi-form-dialog.component';
+import { FicheSuiviPrintComponent } from '../fiche-suivi-print/fiche-suivi-print.component';
 
 @Component({
   selector: 'app-fiche-projet-details',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent, FicheTestFormComponent, FicheTestPrintComponent, FicheSuiviFormDialogComponent],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent, FicheTestFormComponent, FicheTestPrintComponent, FicheSuiviFormDialogComponent, FicheSuiviPrintComponent],
   templateUrl: './fiche-projet-details.component.html'
 })
 export class FicheProjetDetailsComponent implements OnInit {
@@ -37,6 +38,7 @@ export class FicheProjetDetailsComponent implements OnInit {
   projet?: Project;
   ficheTest?: FicheTest;
   activeTab: 'dashboard' | 'ficheTest' = 'dashboard';
+  selectedFicheSuiviToPrint?: any;
 
   ngOnInit() {
     this.loadProjectDetails();
@@ -289,5 +291,15 @@ exportProjectDetails() {
         });
       }
     });
+  }
+
+  printFicheSuivi(fiche: any) {
+    this.selectedFicheSuiviToPrint = fiche;
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        this.selectedFicheSuiviToPrint = null;
+      }, 1000);
+    }, 100);
   }
 }

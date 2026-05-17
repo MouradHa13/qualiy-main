@@ -1,4 +1,4 @@
-<div class="glass-card !p-0 overflow-hidden border-none shadow-2xl md:min-w-[850px]">
+<div class="glass-card !p-0 overflow-hidden border-none shadow-2xl md:min-w-[850px] flex flex-col h-full max-h-[85vh]">
   <!-- Premium Header -->
   <div class="p-8 bg-gradient-to-r from-primary to-accent text-white flex justify-between items-center relative overflow-hidden">
     <div class="relative z-10">
@@ -42,7 +42,7 @@
     </button>
   </div>
 
-  <mat-dialog-content class="mat-typography !m-0 !p-8 custom-scrollbar max-h-[60vh]">
+  <mat-dialog-content class="mat-typography !m-0 !p-8 custom-scrollbar flex-1 overflow-y-auto">
     <form [formGroup]="ficheForm" class="space-y-6">
 
       <!-- SECTION 1: SIGNALEMENT & DIAGNOSTIC -->

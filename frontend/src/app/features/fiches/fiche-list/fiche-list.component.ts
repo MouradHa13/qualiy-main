@@ -84,7 +84,9 @@ export class FicheListComponent implements OnInit {
   editFiche(fiche: any) {
     this.projetService.getById(fiche.projetId).subscribe(project => {
       const dialogRef = this.dialog.open(FicheSuiviFormDialogComponent, {
-        width: '550px',
+        width: '850px',
+        maxWidth: '95vw',
+        panelClass: 'modern-dialog',
         data: { project, ficheToEdit: fiche }
       });
 
