@@ -40,12 +40,8 @@ export interface Nomenclature {
   actif: boolean;
 }
 
-export interface FicheSuivi {
-  id?: string;
+import { FicheSuivi as ProjetFicheSuivi } from './projet.model';
+
+export interface FicheSuivi extends ProjetFicheSuivi {
   projetNom?: string;
-  dateSaisie: string;
-  avancement: number;
-  problemes: string;
-  decisions: string;
-  indicateurs: string;
 }

@@ -14,11 +14,13 @@ import { FicheTestFormComponent } from '../fiche-test/fiche-test-form/fiche-test
 import { FicheTestPrintComponent } from '../fiche-test/fiche-test-print/fiche-test-print.component';
 import { FicheTestService } from '../../../services/fiche-test.service';
 import { FicheTest } from '../../../models/fiche-test.model';
+import { FicheService } from '../../../services/fiche.service';
+import { FicheSuiviFormDialogComponent } from '../fiche-suivi-form-dialog/fiche-suivi-form-dialog.component';
 
 @Component({
   selector: 'app-fiche-projet-details',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent, FicheTestFormComponent, FicheTestPrintComponent],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent, FicheTestFormComponent, FicheTestPrintComponent, FicheSuiviFormDialogComponent],
   templateUrl: './fiche-projet-details.component.html'
 })
 export class FicheProjetDetailsComponent implements OnInit {
@@ -26,6 +28,7 @@ export class FicheProjetDetailsComponent implements OnInit {
   private router = inject(Router);
   private projetService = inject(ProjetService);
   private ficheTestService = inject(FicheTestService);
+  private ficheService = inject(FicheService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   
@@ -107,6 +110,86 @@ export class FicheProjetDetailsComponent implements OnInit {
       signatureResponsable: '',
       dateValidation: undefined
     };
+  }
+
+  openAddFicheSuivi() {
+    if (!this.projet) return;
+    
+    const dialogRef = this.dialog.open(FicheSuiviFormDialogComponent, {
+      width: '850px',
+      maxWidth: '95vw',
+      panelClass: 'modern-dialog',
+      data: { project: this.projet }
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result && this.projet?.id) {
+        this.ficheService.addFicheSuivi(this.projet.id, result).subscribe({
+          next: () => {
+            this.toastr.success('Fiche de suivi ajoutée avec succès');
+            this.loadProjectDetails();
+          },
+          error: () => this.toastr.error('Erreur lors de l\'ajout de la fiche')
+        });
+      }
+    });
+  }
+
+  openEditFicheSuivi(fiche: any) {
+    if (!this.projet) return;
+    
+    const dialogRef = this.dialog.open(FicheSuiviFormDialogComponent, {
+      width: '850px',
+      maxWidth: '95vw',
+      panelClass: 'modern-dialog',
+      data: { project: this.projet, ficheToEdit: fiche }
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result && fiche.id) {
+        this.ficheService.updateFicheSuivi(fiche.id, result).subscribe({
+          next: () => {
+            this.toastr.success('Fiche de suivi mise à jour avec succès');
+            this.loadProjectDetails();
+          },
+          error: () => this.toastr.error('Erreur lors de la mise à jour de la fiche')
+        });
+      }
+    });
+  }
+
+  getTestStatus(ficheSuivi: any): { label: string, colorClass: string, icon: string } {
+    if (!ficheSuivi.versionCible) {
+      return { label: 'Sans Version', colorClass: 'bg-gray-100 text-gray-500 border border-gray-200 dark:bg-white/5 dark:text-gray-400', icon: 'tag' };
+    }
+    
+    if (this.ficheTest && this.ficheTest.version === ficheSuivi.versionCible) {
+      if (this.ficheTest.dateValidation) {
+        return { label: 'Validée', colorClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20', icon: 'check_circle' };
+      } else {
+        return { label: 'En Cours de Test', colorClass: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20', icon: 'pending' };
+      }
+    }
+    
+    return { label: 'Aucun Test', colorClass: 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20', icon: 'cancel' };
+  }
+
+  goToTestForVersion(version: string) {
+    this.activeTab = 'ficheTest';
+    // If the test form is loaded, we can dynamically suggest or patch the version!
+    setTimeout(() => {
+      if (this.ficheTestFormComponent && this.ficheTestFormComponent.testForm) {
+        const currentVersion = this.ficheTestFormComponent.testForm.get('version')?.value;
+        if (!currentVersion || currentVersion !== version) {
+          if (confirm(`Voulez-vous initialiser la Fiche de Test pour la version ${version} ?`)) {
+            this.ficheTestFormComponent.testForm.patchValue({
+              version: version
+            });
+            this.toastr.info(`Version cible mise à jour à ${version} dans la Fiche de Test`);
+          }
+        }
+      }
+    }, 100);
   }
 
   goBack() {

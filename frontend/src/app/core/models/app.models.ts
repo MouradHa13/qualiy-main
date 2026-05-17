@@ -19,14 +19,9 @@ export interface Project {
   chefDeProjet?: User | { id: string; nom?: string; email?: string };
 }
 
-export interface FicheSuivi {
-  id?: string;
-  dateSaisie: string;
-  avancement: number;
-  problemes: string;
-  decisions: string;
-  indicateurs: string;
-}
+import { FicheSuivi as ProjetFicheSuivi } from '../../models/projet.model';
+
+export interface FicheSuivi extends ProjetFicheSuivi {}
 
 export interface KPI {
   id: string;

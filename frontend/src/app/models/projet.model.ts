@@ -78,4 +78,55 @@ export interface FicheSuivi {
   observations?: string | null;
   statut?: string | null;
   ficheProjet?: FicheProjet; // Added for frontend convenience if joined
+
+  // Signalement
+  refContractuelle?: string | null;
+  demandeur?: string | null;
+  natureDemande?: string | null; // ANOMALIE, AMELIORATION, NOUVEAU_BESOIN
+  procedureConcernee?: string | null;
+  descriptionProbleme?: string | null;
+  piecesJointes?: string | null;
+  visaRA?: string | null;
+
+  // Diagnostic
+  faisabilite?: boolean | null;
+  typeVersion?: string | null; // VERSION, PATCH
+  versionCible?: string | null;
+  commentaireDiagnostic?: string | null;
+  estimationCharge?: string | null;
+  estimationDelai?: string | null;
+  decisionRMAP?: boolean | null;
+  observationRMAP?: string | null;
+  dateDecisionRMAP?: string | Date | null;
+  visaRMAP?: string | null;
+
+  // Mise à Disposition (MAD) & Dev
+  madSource?: boolean | null;
+  madExecutable?: boolean | null;
+  madDocumentation?: boolean | null;
+  dateDemandeMAD?: string | Date | null;
+  dateReceptionMAD?: string | Date | null;
+  visaRAMAD?: string | null;
+  dateDemandeEnvDev?: string | Date | null;
+  dateReelleEnvDev?: string | Date | null;
+  visaRAEnvDev?: string | null;
+
+  // Compte Rendu (CR) Travaux & Tests
+  objetCompteRendu?: string | null;
+  comporteSource?: boolean | null;
+  comporteExecutable?: boolean | null;
+  comporteDocumentation?: boolean | null;
+  dateDemandeEnvTest?: string | Date | null;
+  dateReelleEnvTest?: string | Date | null;
+  dateFinTravaux?: string | Date | null;
+  visaRACompteRendu?: string | null;
+  visaRMAPCompteRendu?: string | null;
+
+  // Clôture
+  dateEnvoiPackage?: string | Date | null;
+  observationCloture?: string | null;
+  visaRMAPCloture?: string | null;
+
+  // Liaison
+  ficheTestId?: string | null;
 }

@@ -1,75 +1,366 @@
-<div class="glass-card !p-0 overflow-hidden border-none shadow-2xl">
+<div class="glass-card !p-0 overflow-hidden border-none shadow-2xl md:min-w-[850px]">
   <!-- Premium Header -->
   <div class="p-8 bg-gradient-to-r from-primary to-accent text-white flex justify-between items-center relative overflow-hidden">
     <div class="relative z-10">
-      <h2 class="text-2xl font-black tracking-tighter mb-1">Mise à jour du Suivi</h2>
-      <p class="text-white/80 text-xs font-medium uppercase tracking-widest">{{ data.project.nomProjet }}</p>
+      <h2 class="text-2xl font-black tracking-tighter mb-1">Fiche de Suivi d'une Action de Maintenance</h2>
+      <p class="text-white/80 text-xs font-medium uppercase tracking-widest">{{ data.project.nomProjet }} • Code SMQ : FOR 236</p>
     </div>
     <button (click)="onCancel()" class="relative z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
       <mat-icon>close</mat-icon>
     </button>
     <!-- Background Decor -->
     <div class="absolute -right-4 -top-4 opacity-10">
-      <mat-icon class="!text-[120px] !w-[120px] !h-[120px]">description</mat-icon>
+      <mat-icon class="!text-[120px] !w-[120px] !h-[120px]">engineering</mat-icon>
     </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="flex border-b border-gray-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 p-2 overflow-x-auto gap-2">
+    <button type="button" (click)="setSection('signalement')" 
+            [ngClass]="activeSection === 'signalement' ? 'bg-white text-primary shadow-sm dark:bg-white/10' : 'text-gray-500 hover:text-primary bg-transparent'" 
+            class="flex-1 min-w-[150px] py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+      <mat-icon class="!text-lg">assignment</mat-icon>
+      Signalement & Diag
+    </button>
+    <button type="button" (click)="setSection('mad')" 
+            [ngClass]="activeSection === 'mad' ? 'bg-white text-primary shadow-sm dark:bg-white/10' : 'text-gray-500 hover:text-primary bg-transparent'" 
+            class="flex-1 min-w-[150px] py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+      <mat-icon class="!text-lg">cloud_sync</mat-icon>
+      Mise à Dispo & Dev
+    </button>
+    <button type="button" (click)="setSection('travaux')" 
+            [ngClass]="activeSection === 'travaux' ? 'bg-white text-primary shadow-sm dark:bg-white/10' : 'text-gray-500 hover:text-primary bg-transparent'" 
+            class="flex-1 min-w-[150px] py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+      <mat-icon class="!text-lg">history_edu</mat-icon>
+      CR Travaux & Tests
+    </button>
+    <button type="button" (click)="setSection('cloture')" 
+            [ngClass]="activeSection === 'cloture' ? 'bg-white text-primary shadow-sm dark:bg-white/10' : 'text-gray-500 hover:text-primary bg-transparent'" 
+            class="flex-1 min-w-[150px] py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+      <mat-icon class="!text-lg">verified</mat-icon>
+      Clôture
+    </button>
   </div>
 
   <mat-dialog-content class="mat-typography !m-0 !p-8 custom-scrollbar max-h-[60vh]">
     <form [formGroup]="ficheForm" class="space-y-6">
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-2 space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Sujet du Suivi *</label>
-          <div class="relative group">
-            <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">topic</mat-icon>
-            <input matInput formControlName="sujet" class="input-field !pl-12" placeholder="Ex: Revue hebdomadaire">
+
+      <!-- SECTION 1: SIGNALEMENT & DIAGNOSTIC -->
+      <div *ngIf="activeSection === 'signalement'" class="space-y-6 animate-fade-in">
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-primary rounded-full"></span>
+          1. Signalement de l'intervention
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Référence Contractuelle</label>
+            <div class="relative group">
+              <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">description</mat-icon>
+              <input matInput formControlName="refContractuelle" class="input-field !pl-12" placeholder="Ex: CONTRAT-2026-X">
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Demandeur *</label>
+            <div class="relative group">
+              <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">person</mat-icon>
+              <input matInput formControlName="demandeur" class="input-field !pl-12" placeholder="Ex: Siwar Trabelsi">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Nature de la demande</label>
+            <select formControlName="natureDemande" class="input-field py-0">
+              <option value="ANOMALIE">1- Anomalie(s)</option>
+              <option value="AMELIORATION">2- Amélioration</option>
+              <option value="NOUVEAU_BESOIN">3- Développement nouveau besoin</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Procédure(s) Concernée(s)</label>
+            <div class="relative group">
+              <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">gavel</mat-icon>
+              <input matInput formControlName="procedureConcernee" class="input-field !pl-12" placeholder="Ex: SMQ-PR-04">
+            </div>
           </div>
         </div>
 
         <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Taux d'Avancement (%) *</label>
-          <div class="relative group">
-            <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">trending_up</mat-icon>
-            <input matInput type="number" formControlName="avancement" class="input-field !pl-12" min="0" max="100">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Description du problème *</label>
+          <textarea matInput formControlName="descriptionProbleme" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Décrivez le problème rencontré..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Pièces Jointes</label>
+            <input matInput formControlName="piecesJointes" class="input-field" placeholder="Ex: Rapport.pdf, Captures.zip">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RA (Signalement)</label>
+            <input matInput formControlName="visaRA" class="input-field" placeholder="Nom ou signature du RA">
+          </div>
+        </div>
+
+        <!-- Diagnostic Sub-Section -->
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pt-6 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-accent rounded-full"></span>
+          2. Diagnostic & Décisions
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Faisabilité</label>
+            <select formControlName="faisabilite" class="input-field py-0">
+              <option [value]="true">Oui (Faisable)</option>
+              <option [value]="false">Non (Refusé)</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Type d'intervention</label>
+            <select formControlName="typeVersion" class="input-field py-0">
+              <option value="VERSION">Nouvelle Version</option>
+              <option value="PATCH">Patch de Correction</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Version Cible / No Version *</label>
+            <div class="relative group">
+              <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">tag</mat-icon>
+              <input matInput formControlName="versionCible" class="input-field !pl-12" placeholder="Ex: 1.2.0">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Estimation de la Charge</label>
+            <input matInput formControlName="estimationCharge" class="input-field" placeholder="Ex: 5 Jours/Homme">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Estimation des Délais</label>
+            <input matInput formControlName="estimationDelai" class="input-field" placeholder="Ex: Livraison d'ici 2 semaines">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Décision RMAP</label>
+            <select formControlName="decisionRMAP" class="input-field py-0">
+              <option [value]="true">Oui (Autorisé)</option>
+              <option [value]="false">Non (Rejeté)</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date Décision RMAP</label>
+            <input matInput type="date" formControlName="dateDecisionRMAP" class="input-field">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RA (Diagnostic)</label>
+            <input matInput formControlName="visaRAMAD" class="input-field" placeholder="Signature RA">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RMAP (Diagnostic)</label>
+            <input matInput formControlName="visaRMAP" class="input-field" placeholder="Signature RMAP">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-2 space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Commentaire Diagnostic / Solutions</label>
+            <textarea matInput formControlName="commentaireDiagnostic" rows="2" class="input-field !h-auto py-3 resize-none" placeholder="Commentaire sur la solution apportée..."></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Avancement (%) *</label>
+            <input matInput type="number" formControlName="avancement" class="input-field" min="0" max="100">
           </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Problèmes Rencontrés</label>
-          <textarea matInput formControlName="problemes" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Quels sont les obstacles actuels..."></textarea>
+      <!-- SECTION 2: MISE A DISPOSITION & DEV -->
+      <div *ngIf="activeSection === 'mad'" class="space-y-6 animate-fade-in">
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-primary rounded-full"></span>
+          3. Demande de mise à disposition (MAD)
+        </h3>
+
+        <div class="p-6 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-4">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Éléments demandés à disposition :</label>
+          <div class="flex flex-wrap gap-8 pt-2">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="madSource" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Code Source</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="madExecutable" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Code Exécutable</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="madDocumentation" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Documentation</span>
+            </label>
+          </div>
         </div>
 
-        <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Décisions Coordonnées</label>
-          <textarea matInput formControlName="decisions" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Quelles actions ont été décidées..."></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date Demande MAD</label>
+            <input matInput type="date" formControlName="dateDemandeMAD" class="input-field">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date Réception MAD</label>
+            <input matInput type="date" formControlName="dateReceptionMAD" class="input-field">
+          </div>
+        </div>
+
+        <!-- Dev Environment Sub-Section -->
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pt-6 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-accent rounded-full"></span>
+          4. Environnement de Développement
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date Demande Ouverture Env Dev</label>
+            <input matInput type="date" formControlName="dateDemandeEnvDev" class="input-field">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date Réelle d'Ouverture Env Dev</label>
+            <input matInput type="date" formControlName="dateReelleEnvDev" class="input-field">
+          </div>
+        </div>
+
+        <div class="space-y-2 max-w-md">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RA (Environnement Dev)</label>
+          <input matInput formControlName="visaRAEnvDev" class="input-field" placeholder="Signature RA">
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- SECTION 3: COMPTE RENDU TRAVAUX & TESTS -->
+      <div *ngIf="activeSection === 'travaux'" class="space-y-6 animate-fade-in">
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-primary rounded-full"></span>
+          5. Travaux de Maintenance, Test & Packaging
+        </h3>
+
         <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Indicateurs de Performance</label>
-          <textarea matInput formControlName="indicateurs" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="KPIs, métriques de qualité..."></textarea>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Objet des travaux (Compte Rendu)</label>
+          <textarea matInput formControlName="objetCompteRendu" rows="2" class="input-field !h-auto py-3 resize-none" placeholder="Ex: Correction de l'erreur d'exécution et tests de non-régression..."></textarea>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-4">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Éléments inclus dans la nouvelle version :</label>
+          <div class="flex flex-wrap gap-8 pt-2">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="comporteSource" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Code Source</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="comporteExecutable" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Code Exécutable</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" formControlName="comporteDocumentation" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+              <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Documentation</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Ouverture Env Test (Demande)</label>
+            <input matInput type="date" formControlName="dateDemandeEnvTest" class="input-field">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Ouverture Env Test (Réelle)</label>
+            <input matInput type="date" formControlName="dateReelleEnvTest" class="input-field">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Fin des travaux</label>
+            <input matInput type="date" formControlName="dateFinTravaux" class="input-field">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RA (Compte Rendu)</label>
+            <input matInput formControlName="visaRACompteRendu" class="input-field" placeholder="Signature RA">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RMAP (Compte Rendu)</label>
+            <input matInput formControlName="visaRMAPCompteRendu" class="input-field" placeholder="Signature RMAP">
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-primary/5 border border-primary/10 flex items-start gap-4">
+          <mat-icon class="text-primary !text-3xl !w-8 !h-8 shrink-0">fact_check</mat-icon>
+          <div>
+            <h4 class="text-sm font-black text-primary uppercase tracking-wider mb-1">Liaison avec la Fiche de Test active</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-semibold">
+              Cette action de maintenance cible la version <strong>{{ ficheForm.get('versionCible')?.value || '[Non définie]' }}</strong>. La validation de conformité technique sera assurée par la Fiche de Test correspondante de votre projet.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: CLOTURE -->
+      <div *ngIf="activeSection === 'cloture'" class="space-y-6 animate-fade-in">
+        <h3 class="text-lg font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-white/5">
+          <span class="w-2 h-6 bg-primary rounded-full"></span>
+          6. Clôture de l'action & Package
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date d'Envoi du Package</label>
+            <input matInput type="date" formControlName="dateEnvoiPackage" class="input-field">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Visa RMAP (Clôture final)</label>
+            <input matInput formControlName="visaRMAPCloture" class="input-field" placeholder="Signature RMAP">
+          </div>
         </div>
 
         <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Observations Additionnelles</label>
-          <textarea matInput formControlName="observations" rows="3" class="input-field !h-auto py-3 resize-none" placeholder="Notes ou remarques libres..."></textarea>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Observations / Commentaires de Clôture</label>
+          <textarea matInput formControlName="observationCloture" rows="4" class="input-field !h-auto py-3 resize-none" placeholder="Exprimez toutes les observations finales d'archivage..."></textarea>
         </div>
       </div>
 
     </form>
   </mat-dialog-content>
 
-  <div class="p-6 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
-    <button (click)="onCancel()" class="btn-secondary !bg-transparent !border-none hover:!bg-slate-100">Annuler</button>
-    <button [disabled]="ficheForm.invalid" (click)="onSave()" 
-            class="btn-primary !px-10 shadow-glow-primary group">
-      <span class="flex items-center">
-        Soumettre la Fiche
-        <mat-icon class="ml-2 !text-lg group-hover:translate-x-1 transition-transform">send</mat-icon>
-      </span>
-    </button>
+  <!-- Premium Dialog Actions -->
+  <div class="p-6 bg-slate-50/50 dark:bg-slate-900/50 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+    <div class="flex gap-2">
+      <!-- Previous Section Button -->
+      <button type="button" *ngIf="activeSection !== 'signalement'" (click)="activeSection === 'mad' ? setSection('signalement') : activeSection === 'travaux' ? setSection('mad') : setSection('travaux')" class="btn-glass border-gray-200 dark:border-white/10 text-gray-500 hover:text-primary !h-12 !px-4">
+        <span class="material-icons mr-1">arrow_back</span>
+        Précédent
+      </button>
+    </div>
+    
+    <div class="flex gap-3">
+      <button type="button" (click)="onCancel()" class="btn-secondary !bg-transparent !border-none hover:!bg-slate-100 !h-12">Annuler</button>
+      
+      <!-- Next Section Button -->
+      <button type="button" *ngIf="activeSection !== 'cloture'" (click)="activeSection === 'signalement' ? setSection('mad') : activeSection === 'mad' ? setSection('travaux') : setSection('cloture')" class="btn-glass border-primary/20 text-primary bg-primary/5 hover:bg-primary hover:text-white !h-12 !px-6">
+        Suivant
+        <span class="material-icons ml-1">arrow_forward</span>
+      </button>
+      
+      <!-- Save Button -->
+      <button type="button" *ngIf="activeSection === 'cloture'" [disabled]="ficheForm.invalid" (click)="onSave()" 
+              class="btn-primary !px-10 shadow-glow-primary group !h-12">
+        <span class="flex items-center">
+          Soumettre la Fiche
+          <mat-icon class="ml-2 !text-lg group-hover:translate-x-1 transition-transform">send</mat-icon>
+        </span>
+      </button>
+    </div>
   </div>
 </div>

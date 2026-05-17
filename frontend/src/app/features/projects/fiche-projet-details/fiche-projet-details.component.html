@@ -78,11 +78,20 @@
 
           <!-- Timeline Tracking -->
           <div class="glass-card p-10">
-            <div class="flex items-center gap-4 mb-10">
-              <div class="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shadow-inner">
-                <span class="material-icons">history_edu</span>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 pb-4 border-b border-gray-100 dark:border-white/5">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center shadow-inner">
+                  <span class="material-icons">history_edu</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Journal d'Audit & Suivi</h3>
+                  <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">Actions de maintenance (FOR 236)</p>
+                </div>
               </div>
-              <h3 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Journal d'Audit & Suivi</h3>
+              <button (click)="openAddFicheSuivi()" class="btn-primary !h-12 !px-5 shadow-glow-primary flex items-center gap-2">
+                <span class="material-icons !text-lg">add_circle</span>
+                <span class="text-xs font-black uppercase tracking-widest">Nouveau Suivi</span>
+              </button>
             </div>
             
             <div class="relative space-y-10 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-primary/20 before:via-accent/20 before:to-transparent">
@@ -95,14 +104,51 @@
                   
                   <!-- Fiche Card -->
                   <div class="glass-card-interactive p-8 !shadow-sm hover:!shadow-xl">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                      <div class="flex items-center gap-3">
+                    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-6">
+                      <div class="flex flex-wrap items-center gap-3">
                         <span class="text-lg font-black text-gray-900 dark:text-white tracking-tighter">{{ f.dateSaisie | date:'dd MMM yyyy' }}</span>
-                        <span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Saisie Officielle</span>
+                        
+                        <!-- Nature Demande Badge -->
+                        @if (f.natureDemande) {
+                          <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            {{ f.natureDemande === 'ANOMALIE' ? 'Anomalie' : f.natureDemande === 'AMELIORATION' ? 'Amélioration' : 'Nouveau Besoin' }}
+                          </span>
+                        }
+                        
+                        <!-- Version Badge -->
+                        @if (f.versionCible) {
+                          <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
+                            v{{ f.versionCible }}
+                          </span>
+                        }
+
+                        <!-- Test Validation Badge -->
+                        <span [ngClass]="getTestStatus(f).colorClass" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border">
+                          <span class="material-icons !text-[11px]">{{ getTestStatus(f).icon }}</span>
+                          Tests : {{ getTestStatus(f).label }}
+                        </span>
                       </div>
-                      <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/10">
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avancement</span>
-                        <span class="text-xl font-black text-primary tracking-tighter">{{ f.avancement }}%</span>
+                      
+                      <div class="flex items-center gap-3 self-end xl:self-auto">
+                        <!-- Action Links -->
+                        @if (f.versionCible) {
+                          <button (click)="goToTestForVersion(f.versionCible)" class="btn-glass !h-10 !px-4 !text-[10px] !text-primary hover:!bg-primary hover:!text-white border-primary/20 flex items-center gap-1">
+                            <span class="material-icons !text-sm">fact_check</span>
+                            SCÉNARIOS TEST
+                          </button>
+                        }
+
+                        <!-- Edit Button -->
+                        <button (click)="openEditFicheSuivi(f)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-primary/10 hover:text-primary transition-all text-gray-500" title="Modifier le suivi">
+                          <span class="material-icons !text-lg">edit</span>
+                        </button>
+
+                        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700"></div>
+
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/10">
+                          <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avancement</span>
+                          <span class="text-xl font-black text-primary tracking-tighter">{{ f.avancement }}%</span>
+                        </div>
                       </div>
                     </div>
                     

@@ -30,6 +30,26 @@ public class FicheSuiviService {
         fiche.setDateSaisie(new Date());
         fiche.setProjetId(projet.getId());
         fiche.setProjetNom(projet.getNomProjet());
+
+        // Backwards compatibility mapper
+        if (fiche.getDescriptionProbleme() != null && fiche.getProblemes() == null) {
+            fiche.setProblemes(fiche.getDescriptionProbleme());
+        } else if (fiche.getProblemes() != null && fiche.getDescriptionProbleme() == null) {
+            fiche.setDescriptionProbleme(fiche.getProblemes());
+        }
+
+        if (fiche.getCommentaireDiagnostic() != null && fiche.getDecisions() == null) {
+            fiche.setDecisions(fiche.getCommentaireDiagnostic());
+        } else if (fiche.getDecisions() != null && fiche.getCommentaireDiagnostic() == null) {
+            fiche.setCommentaireDiagnostic(fiche.getDecisions());
+        }
+
+        if (fiche.getObjetCompteRendu() != null && fiche.getSujet() == null) {
+            fiche.setSujet(fiche.getObjetCompteRendu());
+        } else if (fiche.getSujet() != null && fiche.getObjetCompteRendu() == null) {
+            fiche.setObjetCompteRendu(fiche.getSujet());
+        }
+
         FicheSuivi saved = ficheSuiviRepository.save(fiche);
 
         if (projet.getFichesSuivi() == null) projet.setFichesSuivi(new ArrayList<>());
@@ -65,6 +85,68 @@ public class FicheSuiviService {
         fiche.setSujet(details.getSujet());
         fiche.setObservations(details.getObservations());
         fiche.setStatut(details.getStatut());
+
+        // Signalement
+        fiche.setRefContractuelle(details.getRefContractuelle());
+        fiche.setDemandeur(details.getDemandeur());
+        fiche.setNatureDemande(details.getNatureDemande());
+        fiche.setProcedureConcernee(details.getProcedureConcernee());
+        fiche.setDescriptionProbleme(details.getDescriptionProbleme() != null ? details.getDescriptionProbleme() : details.getProblemes());
+        fiche.setPiecesJointes(details.getPiecesJointes());
+        fiche.setVisaRA(details.getVisaRA());
+
+        // Diagnostic
+        fiche.setFaisabilite(details.getFaisabilite());
+        fiche.setTypeVersion(details.getTypeVersion());
+        fiche.setVersionCible(details.getVersionCible());
+        fiche.setCommentaireDiagnostic(details.getCommentaireDiagnostic() != null ? details.getCommentaireDiagnostic() : details.getDecisions());
+        fiche.setEstimationCharge(details.getEstimationCharge());
+        fiche.setEstimationDelai(details.getEstimationDelai());
+        fiche.setDecisionRMAP(details.getDecisionRMAP());
+        fiche.setObservationRMAP(details.getObservationRMAP() != null ? details.getObservationRMAP() : details.getObservations());
+        fiche.setDateDecisionRMAP(details.getDateDecisionRMAP());
+        fiche.setVisaRMAP(details.getVisaRMAP());
+
+        // Mise à disposition
+        fiche.setMadSource(details.getMadSource());
+        fiche.setMadExecutable(details.getMadExecutable());
+        fiche.setMadDocumentation(details.getMadDocumentation());
+        fiche.setDateDemandeMAD(details.getDateDemandeMAD());
+        fiche.setDateReceptionMAD(details.getDateReceptionMAD());
+        fiche.setVisaRAMAD(details.getVisaRAMAD());
+        fiche.setDateDemandeEnvDev(details.getDateDemandeEnvDev());
+        fiche.setDateReelleEnvDev(details.getDateReelleEnvDev());
+        fiche.setVisaRAEnvDev(details.getVisaRAEnvDev());
+
+        // Compte Rendu
+        fiche.setObjetCompteRendu(details.getObjetCompteRendu() != null ? details.getObjetCompteRendu() : details.getSujet());
+        fiche.setComporteSource(details.getComporteSource());
+        fiche.setComporteExecutable(details.getComporteExecutable());
+        fiche.setComporteDocumentation(details.getComporteDocumentation());
+        fiche.setDateDemandeEnvTest(details.getDateDemandeEnvTest());
+        fiche.setDateReelleEnvTest(details.getDateReelleEnvTest());
+        fiche.setDateFinTravaux(details.getDateFinTravaux());
+        fiche.setVisaRACompteRendu(details.getVisaRACompteRendu());
+        fiche.setVisaRMAPCompteRendu(details.getVisaRMAPCompteRendu());
+
+        // Clôture
+        fiche.setDateEnvoiPackage(details.getDateEnvoiPackage());
+        fiche.setObservationCloture(details.getObservationCloture());
+        fiche.setVisaRMAPCloture(details.getVisaRMAPCloture());
+
+        // Liaison
+        fiche.setFicheTestId(details.getFicheTestId());
+
+        // Backwards compatibility sync
+        if (fiche.getDescriptionProbleme() != null) {
+            fiche.setProblemes(fiche.getDescriptionProbleme());
+        }
+        if (fiche.getCommentaireDiagnostic() != null) {
+            fiche.setDecisions(fiche.getCommentaireDiagnostic());
+        }
+        if (fiche.getObjetCompteRendu() != null) {
+            fiche.setSujet(fiche.getObjetCompteRendu());
+        }
 
         FicheSuivi updated = ficheSuiviRepository.save(fiche);
 
