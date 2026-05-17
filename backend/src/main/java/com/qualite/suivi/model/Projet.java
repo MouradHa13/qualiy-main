@@ -38,6 +38,9 @@ public class Projet extends AbstractAuditEntity {
     private List<FicheSuivi> fichesSuivi;
 
     @DBRef
+    private FicheTest ficheTest; // One FicheTest per Projet as requested
+
+    @DBRef
     private List<KPI> kpis;
 
     private Integer avancement; // %

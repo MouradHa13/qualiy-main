@@ -1,0 +1,122 @@
+<div *ngIf="isLoading" class="flex justify-center items-center py-12">
+  <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+</div>
+
+<form *ngIf="!isLoading" [formGroup]="testForm" (ngSubmit)="onSubmit()" class="space-y-8 animate-fade-in">
+  
+  <!-- Entête de la Fiche -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 border-b pb-2">Informations Générales</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Application</label>
+        <input type="text" formControlName="application" class="input-field" placeholder="Nom de l'application">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Version</label>
+        <input type="text" formControlName="version" class="input-field" placeholder="Ex: 1.0.0">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de version</label>
+        <input type="date" formControlName="dateVersion" class="input-field">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Architecture</label>
+        <select formControlName="architecture" class="input-field bg-white dark:bg-gray-800">
+          <option value="Client/serveur">Client/serveur</option>
+          <option value="3-tiers">3-tiers</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date demande environnement de test</label>
+        <input type="date" formControlName="dateDemandeEnvTest" class="input-field">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date note de service d'affectation</label>
+        <input type="date" formControlName="dateNoteServiceAffectation" class="input-field">
+      </div>
+    </div>
+  </div>
+
+  <!-- Sections de Test (Fonctionnel, Sécurité, Qualité) -->
+  <ng-container *ngFor="let section of ['testFonctionnel', 'testSecurite', 'testQualite']; let i = index">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700" [formGroupName]="section">
+      <div class="flex justify-between items-center mb-6 border-b pb-2">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+          <span *ngIf="section === 'testFonctionnel'" class="text-blue-500">Test Fonctionnel</span>
+          <span *ngIf="section === 'testSecurite'" class="text-red-500">Test Sécurité</span>
+          <span *ngIf="section === 'testQualite'" class="text-green-500">Test Qualité</span>
+        </h3>
+        <div class="flex items-center space-x-2 w-1/2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Responsable :</label>
+          <input type="text" formControlName="responsable" class="input-field py-1" placeholder="Nom du responsable">
+        </div>
+      </div>
+
+      <div formArrayName="lignes" class="space-y-4">
+        <div *ngFor="let ligne of getLignes(section).controls; let j = index" [formGroupName]="j" 
+             class="flex items-end gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl relative group">
+             
+          <div class="w-32">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Date début</label>
+            <input type="date" formControlName="dateDebut" class="input-field py-2 text-sm">
+          </div>
+          <div class="w-32">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Date fin</label>
+            <input type="date" formControlName="dateFin" class="input-field py-2 text-sm">
+          </div>
+          <div class="w-24 flex flex-col items-center justify-center pb-2">
+            <label class="block text-xs font-medium text-gray-500 mb-2">Validé</label>
+            <input type="checkbox" formControlName="valide" class="w-5 h-5 text-primary rounded focus:ring-primary">
+          </div>
+          <div class="flex-1">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Observations / Commentaires</label>
+            <input type="text" formControlName="observations" class="input-field py-2 text-sm" placeholder="Remarques...">
+          </div>
+          <div class="w-48">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Nom et Prénom</label>
+            <input type="text" formControlName="signataire" class="input-field py-2 text-sm" placeholder="Testeur">
+          </div>
+          
+          <button type="button" (click)="removeLigne(section, j)" 
+                  class="absolute -right-2 -top-2 bg-red-100 text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+            <mat-icon class="text-sm">close</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <button type="button" (click)="addLigne(section)" class="mt-4 flex items-center text-sm font-bold text-primary hover:text-primary-dark">
+        <mat-icon class="text-sm mr-1">add</mat-icon> Ajouter une ligne
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- Clôture -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 border-b pb-2">Fin des tests</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">RA</label>
+        <input type="text" formControlName="responsableValidation" class="input-field" placeholder="Responsable">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Signature</label>
+        <input type="text" formControlName="signatureResponsable" class="input-field" placeholder="Nom & Prénom">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date</label>
+        <input type="date" formControlName="dateValidation" class="input-field">
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-4 pt-4">
+    <button type="submit" [disabled]="isSaving" class="btn-primary">
+      <mat-icon *ngIf="!isSaving" class="mr-2">save</mat-icon>
+      <mat-icon *ngIf="isSaving" class="mr-2 animate-spin">refresh</mat-icon>
+      {{ isSaving ? 'Enregistrement...' : 'Enregistrer la fiche' }}
+    </button>
+  </div>
+</form>

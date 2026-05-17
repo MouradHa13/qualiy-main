@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetService } from '../../../services/projet.service';
@@ -10,21 +10,30 @@ import { ToastrService } from 'ngx-toastr';
 import { ProjectFormDialogComponent } from '../project-form-dialog/project-form-dialog.component';
 import jsPDF from 'jspdf';
 import { ProjectPrintViewComponent } from '../project-print-view/project-print-view.component';
+import { FicheTestFormComponent } from '../fiche-test/fiche-test-form/fiche-test-form.component';
+import { FicheTestPrintComponent } from '../fiche-test/fiche-test-print/fiche-test-print.component';
+import { FicheTestService } from '../../../services/fiche-test.service';
+import { FicheTest } from '../../../models/fiche-test.model';
 
 @Component({
   selector: 'app-fiche-projet-details',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, ProjectPrintViewComponent, FicheTestFormComponent, FicheTestPrintComponent],
   templateUrl: './fiche-projet-details.component.html'
 })
 export class FicheProjetDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projetService = inject(ProjetService);
+  private ficheTestService = inject(FicheTestService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   
+  @ViewChild(FicheTestFormComponent) ficheTestFormComponent?: FicheTestFormComponent;
+  
   projet?: Project;
+  ficheTest?: FicheTest;
+  activeTab: 'dashboard' | 'ficheTest' = 'dashboard';
 
   ngOnInit() {
     this.loadProjectDetails();
@@ -33,8 +42,71 @@ export class FicheProjetDetailsComponent implements OnInit {
   loadProjectDetails() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.projetService.getById(id).subscribe((data: Project) => this.projet = data);
+      this.projetService.getById(id).subscribe((data: Project) => {
+        this.projet = data;
+        this.loadFicheTest(id);
+      });
     }
+  }
+
+  loadFicheTest(projetId: string) {
+    this.ficheTestService.getFicheTestByProjet(projetId).subscribe({
+      next: (data) => {
+        if (data) {
+          this.ficheTest = data;
+        }
+      },
+      error: () => {
+        // Not found, will be created later
+      }
+    });
+  }
+
+  setTab(tab: 'dashboard' | 'ficheTest') {
+    this.activeTab = tab;
+  }
+
+  onFicheTestSaved(ficheTest: FicheTest) {
+    this.ficheTest = ficheTest;
+  }
+
+  getPrintableFicheTest(): FicheTest {
+    const liveData = this.ficheTestFormComponent?.testForm?.value;
+    if (liveData) {
+      return {
+        ...this.ficheTest,
+        ...liveData,
+        testFonctionnel: {
+          responsable: liveData.testFonctionnel?.responsable || '',
+          lignes: liveData.testFonctionnel?.lignes || []
+        },
+        testSecurite: {
+          responsable: liveData.testSecurite?.responsable || '',
+          lignes: liveData.testSecurite?.lignes || []
+        },
+        testQualite: {
+          responsable: liveData.testQualite?.responsable || '',
+          lignes: liveData.testQualite?.lignes || []
+        }
+      };
+    }
+
+    return this.ficheTest || {
+      id: '',
+      projetId: this.projet?.id || '',
+      application: this.projet?.nomProjet || '',
+      version: '',
+      dateVersion: undefined,
+      architecture: 'Client/serveur',
+      dateDemandeEnvTest: undefined,
+      dateNoteServiceAffectation: undefined,
+      testFonctionnel: { responsable: '', lignes: [] },
+      testSecurite: { responsable: '', lignes: [] },
+      testQualite: { responsable: '', lignes: [] },
+      responsableValidation: '',
+      signatureResponsable: '',
+      dateValidation: undefined
+    };
   }
 
   goBack() {
